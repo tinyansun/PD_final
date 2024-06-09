@@ -1,6 +1,15 @@
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <algorithm>
+#include <unordered_map>
+#include <string>
+#include <queue>
 using namespace std;
-<<<<<<< Updated upstream
-=======
 
 class Grid{
     public:
@@ -217,4 +226,3 @@ int cal_h(int x, int y, int stop_x, int stop_y){
     if (x_out >= y_out) return x_out;
     else return y_out;
 }
->>>>>>> Stashed changes
