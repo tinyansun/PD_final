@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -210,6 +209,3 @@ int cal_h(int x, int y, int stop_x, int stop_y){
     if (x_out >= y_out) return x_out;
     else return y_out;
 }
-=======
-using namespace std;
->>>>>>> 932b8215a9967e93c04fe5a996f420b56c2d6e62
