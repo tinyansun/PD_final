@@ -2,10 +2,14 @@
 #include <CfgJsonParser.h>
 #include <ConnectionJsonParser.h>
 #include <Router.h>
+#include <Graph.h>
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
+
+
+
     if (argc != 5) {
         cerr << "Usage: ./CGR <tracks/um> <def_directory> <cfg_file> <connection_file>" << endl;
         return -1;

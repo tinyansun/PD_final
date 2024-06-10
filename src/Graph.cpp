@@ -2,18 +2,15 @@
 #include <assert.h>
 
 // some useful function
-template<typename T>
-T dist_Mah(const pair<T, T>& a, const pair<T, T>& b) {
-    return abs(a.first - b.first) + abs(a.second - b.second);
-}
 
 vector<Edge*> Graph::MST() {
+    vector<Edge*> E_buf(E);
     vector<Edge*> mst;
-    sort(E.begin(), E.end(), [](const Edge* & a, const Edge* & b) { 
-        return a->_weight < b->_weight; 
+    sort(E_buf.begin(), E_buf.end(), [](Edge* & a, Edge* & b) { 
+        return a->get_w() < b->get_w(); 
     });
-    for (size_t i = 0; i < E.size() && mst.size() < V.size() - 1; i++){
-        Edge* edge = E[i];
+    for (size_t i = 0; i < E_buf.size() && mst.size() < V.size() - 1; i++){
+        Edge* edge = E_buf[i];
         if (DS_Union(edge->_start_n, edge->_end_n)) {
             mst.push_back(edge);
         }

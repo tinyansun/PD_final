@@ -6,12 +6,18 @@
 #include <cstdlib>
 #include <algorithm>
 #include <string>
+#include <set>
 
 using namespace std;
 
 class Graph;
 class Node;
 class Edge;
+
+template<typename T>
+T dist_Mah(const pair<T, T>& a, const pair<T, T>& b) {
+    return abs(a.first - b.first) + abs(a.second - b.second);
+}
 
 class Graph {
     public:
@@ -24,20 +30,35 @@ class Graph {
             e->get_s()->push_e(e);
             e->get_e()->push_e(e);
         }
-        void complete_g() {
+        void make_complete_g() {
             for (size_t i = 0; i < V.size(); i++) {
                 for (size_t j = i + 1; j < V.size(); j++) {
                     push_e(new Edge(V[i], V[j]));
                 }
             }
         }
+        void reset_g() {
+            reset_V();
+            reset_E();
+        }
+        void reset_V() {
+            for (auto& v: V) v->reset();
+        }
+        void reset_E() {
+            for (auto& e: E) e->reset();
+        }
+
         vector<Edge*> MST();
-        Node* DS_Find (Node* v);
-        bool DS_Union (Node* u, Node* v);
+        Node* DS_Find (Node*);
+        bool DS_Union (Node*, Node*);
+
+        vector<Edge*> Dijk();
+        Node* Dijk_ExtractMin(set<Node*, Node::cmp_dij>&);
+        void Dijk_DecreaseKey(set<Node*, Node::cmp_dij>&, Node*);
+        void Dijk_Insert(set<Node*, Node::cmp_dij>&, Node*);
     private:
         vector<Node*> V;
         vector<Edge*> E;
-
 };
 
 class Edge {
@@ -46,22 +67,42 @@ class Edge {
         Edge(Node* s, Node* e) {
             _start_n = s;
             _end_n = e;
-            set_w();
+            _len = get_dist();
+
+            _dense = 0;
+            _max_dense = 20; // to modify
+            _is_add_dij = false;
         }
         void print();
-        void set_w() {
-            if (is_MST) {
-                _weight = dist_Mah(_start_n->get_coord(), _end_n->get_coord());
+        double get_dist() {
+            if (_is_MST) {
+                _len = dist_Mah(_start_n->get_coord(), _end_n->get_coord());
             }
+        }
+        void set_len(double len) { _len = len; }
+        void set_dense(double d) { _dense = d; }
+        void add_dense(double d) { _dense += d; }
+        void reset() {
+            _dense = 0;
+            _is_add_dij = false;
         }
         Node* get_s() { return _start_n; }
         Node* get_e() { return _end_n; }
-        float get_w() { return _weight; }
+        float get_w() { 
+            if (_is_MST) return _len;
+            else {
+                if (!_is_add_dij) return _len; // need to consider density
+                else return 0;
+            }
+        }
     private:
-        bool is_MST = true;
+        bool _is_MST = true;
         Node* _start_n;
         Node* _end_n;
-        float _weight;
+        float _len;
+        float _dense;
+        float _max_dense;
+        bool _is_add_dij;
 };
 
 class Node {
@@ -69,10 +110,12 @@ class Node {
     public:
         Node(float x, float y) {
             // _prev_node = 0;
-            // _flag = 0;
             _x = x;
             _y = y;
             _ptDS = this;
+            _rank = 1;
+            _prev_e = nullptr;
+            _val_dij = -1; // -1 = inf
         }
         void print();
         void push_e(Edge* e) {
@@ -86,31 +129,33 @@ class Node {
         pair<float, float> get_coord() {
             return {_x, _y};
         }
-
+        void reset() {
+            _ptDS = this;
+            _rank = 1;
+            _prev_e = nullptr;
+            _val_dij = -1;
+        }
         Node* DS_Find();
         bool DS_Union(Node* v);
-        // bool reachable(Node* v, bool set);
-        // static void setGlobalFlag() { _global_flag++; }
-        // void resetForDFS();
+        struct cmp_dij {
+            bool operator()(const Node *lhs, const Node *rhs) const {
+              if (rhs->_val_dij == -1) return true;
+              else if (lhs->_val_dij == -1) return false;
+              else return lhs->_val_dij < rhs->_val_dij;
+            }
+        };
     private:
         float _x;
         float _y;
         vector<Edge*> e_list;
 
-        // // for DFS
-        // Node* _prev_node;
-        // char _color = 'W'; // W,B,G
-        // int _found_time = -1;
-        // int _death_time = -1;
-        // size_t _grp = 0;
-        // int _flag;
-        // static int _global_flag;
-
         // for disjoint set
+        // modified in Graph
         Node* _ptDS;
-        int _rank = 1;
+        int _rank;
 
-        // // for SCC
-        // vector<Edge*> e_t_list;
-        
+        // for Dijkstra
+        Edge* _prev_e;
+        float _val_dij;
+
 };
