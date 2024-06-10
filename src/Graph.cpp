@@ -3,6 +3,20 @@
 
 // some useful function
 
+void Graph::test() {
+    V = vector<Node*> ();
+    E = vector<Edge*> ();
+    push_v(new Node(0, 1));
+    push_v(new Node(2, 1));
+    push_v(new Node(3, 0));
+    push_v(new Node(4, 3));
+    push_v(new Node(0, 0));
+    make_complete_g();
+    for (auto e: MST()) {
+        e->print();
+    }
+}
+
 vector<Edge*> Graph::MST() {
     vector<Edge*> E_buf(E);
     vector<Edge*> mst;
@@ -41,9 +55,15 @@ bool Graph::DS_Union (Node* u, Node* v) {
 
 // edge
 void Edge::print() {
-    // cout << _start_n->get_id() << " " << _end_n->get_id() << " " << _weight << endl;
+    cout << "(" << _start_n->get_coord().first << "," << _start_n->get_coord().second << ") ~ "
+        << "(" << _end_n->get_coord().first << "," << _end_n->get_coord().second << ") --> "
+        << get_w() << endl;
 }
-
+double Edge::get_dist() {
+    if (_is_MST) {
+        return dist_Mah(_start_n->get_coord(), _end_n->get_coord());
+    }
+}
 // Node
 // int Node::_global_flag = 0;
 void Node::print() {

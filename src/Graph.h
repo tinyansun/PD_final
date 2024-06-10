@@ -19,48 +19,6 @@ T dist_Mah(const pair<T, T>& a, const pair<T, T>& b) {
     return abs(a.first - b.first) + abs(a.second - b.second);
 }
 
-class Graph {
-    public:
-        Graph() {}
-        void push_v(Node* v) {
-            V.push_back(v);
-        }
-        void push_e(Edge* e) {
-            E.push_back(e);
-            e->get_s()->push_e(e);
-            e->get_e()->push_e(e);
-        }
-        void make_complete_g() {
-            for (size_t i = 0; i < V.size(); i++) {
-                for (size_t j = i + 1; j < V.size(); j++) {
-                    push_e(new Edge(V[i], V[j]));
-                }
-            }
-        }
-        void reset_g() {
-            reset_V();
-            reset_E();
-        }
-        void reset_V() {
-            for (auto& v: V) v->reset();
-        }
-        void reset_E() {
-            for (auto& e: E) e->reset();
-        }
-
-        vector<Edge*> MST();
-        Node* DS_Find (Node*);
-        bool DS_Union (Node*, Node*);
-
-        vector<Edge*> Dijk();
-        Node* Dijk_ExtractMin(set<Node*, Node::cmp_dij>&);
-        void Dijk_DecreaseKey(set<Node*, Node::cmp_dij>&, Node*);
-        void Dijk_Insert(set<Node*, Node::cmp_dij>&, Node*);
-    private:
-        vector<Node*> V;
-        vector<Edge*> E;
-};
-
 class Edge {
     friend class Graph;
     public:
@@ -74,12 +32,9 @@ class Edge {
             _is_add_dij = false;
         }
         void print();
-        double get_dist() {
-            if (_is_MST) {
-                _len = dist_Mah(_start_n->get_coord(), _end_n->get_coord());
-            }
-        }
+        double get_dist();
         void set_len(double len) { _len = len; }
+        void set_len() { _len = get_dist(); }
         void set_dense(double d) { _dense = d; }
         void add_dense(double d) { _dense += d; }
         void reset() {
@@ -158,4 +113,48 @@ class Node {
         Edge* _prev_e;
         float _val_dij;
 
+};
+
+class Graph {
+    public:
+        Graph() {}
+        void push_v(Node* v) {
+            V.push_back(v);
+        }
+        void push_e(Edge* e) {
+            E.push_back(e);
+            e->get_s()->push_e(e);
+            e->get_e()->push_e(e);
+        }
+        void make_complete_g() {
+            for (size_t i = 0; i < V.size(); i++) {
+                for (size_t j = i + 1; j < V.size(); j++) {
+                    push_e(new Edge(V[i], V[j]));
+                }
+            }
+        }
+        void reset_g() {
+            reset_V();
+            reset_E();
+        }
+        void reset_V() {
+            for (auto& v: V) v->reset();
+        }
+        void reset_E() {
+            for (auto& e: E) e->reset();
+        }
+
+        vector<Edge*> MST();
+        Node* DS_Find (Node*);
+        bool DS_Union (Node*, Node*);
+
+        vector<Edge*> Dijk();
+        Node* Dijk_ExtractMin(set<Node*, Node::cmp_dij>&);
+        void Dijk_DecreaseKey(set<Node*, Node::cmp_dij>&, Node*);
+        void Dijk_Insert(set<Node*, Node::cmp_dij>&, Node*);
+
+        void test();
+    private:
+        vector<Node*> V;
+        vector<Edge*> E;
 };
