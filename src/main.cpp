@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
                 cur_blk_2_x = (MST_out[j].second)->position.first + net[i].rxCoord.first;
                 cur_blk_2_y = (MST_out[j].second)->position.second + net[i].rxCoord.second;
                 // A*-search
-                astar_search(cur_blk_1_x, cur_blk_1_y, cur_blk_2_x, cur_blk_2_y);
+                astar_search(router, cur_blk_1_x, cur_blk_1_y, cur_blk_2_x, cur_blk_2_y);
             }
             // start blk: blk_2, end_blk: blk_1
             else if (MST_out[j].first == &blocks[net[i].rx]){
@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
                 cur_blk_1_x = (MST_out[j].first)->position.first + net[i].rxCoord.first;
                 cur_blk_1_y = (MST_out[j].first)->position.second + net[i].rxCoord.second;
                 // A*-search
-                astar_search(cur_blk_2_x, cur_blk_2_y, cur_blk_1_x, cur_blk_1_y);
+                astar_search(router, cur_blk_2_x, cur_blk_2_y, cur_blk_1_x, cur_blk_1_y);
             }
             else{
                 cout << "Impossible! there's no middle blks!" << endl;
