@@ -27,7 +27,7 @@ public:
         string orientation;
 
         string name;
-        vector<pair<int, int>> final_shape;
+        //vector<pair<int, int>> actual_shape;
 
         int throughBlockNetNum;
         bool isFeedthroughable;
