@@ -44,6 +44,11 @@ int main(int argc, char* argv[]) {
     cerr << "parse finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
     
     // Now, the router object contains all the necessary data for further processing.
-    
+
+    // usage: 
+    // Graph G;
+    // for (block in net) G.push_v(&block)
+    // G.make_complete_g()
+    // global_wire = G.MST()
 }
 
