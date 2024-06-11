@@ -61,14 +61,11 @@ int main(int argc, char* argv[]) {
         Graph cur_graph;
 
         // push_v all blks of this net
-        Block* cur_blk_tx, cur_blk_rx; // how to decalre Block?
-        cur_blk_tx = blocks[net[i].tx]; // map string to block?
-        cur_graph.push_v(cur_blk_tx);
+        cur_graph.push_v(&blocks[net[i].tx]);
 
         vector<string> blk_rx_list = net[i].rx;
         for (int j = 0; j < blk_rx_list.size(); j++){
-            cur_blk_rx = blocks[blk_rx_list[j]];
-            cur_graph.push_v(cur_blk_rx);
+            cur_graph.push_v(&blocks[blk_rx_list[j]]);
         }
 
         // implement MST: get vector of pair of blks
@@ -78,27 +75,27 @@ int main(int argc, char* argv[]) {
         // Find coordinates of each pair
         for (int j = 0; j < MST_out.size(); j++){
             // Block*
-            Block* cur_blk_1 = MST_out[j].first;
-            Block* cur_blk_2 = MST_out[j].second;
+            // Block* cur_blk_1 = MST_out[j].first;
+            // Block* cur_blk_2 = MST_out[j].second;
 
             double cur_blk_1_x, cur_blk_1_y;
             double cur_blk_2_x, cur_blk_2_y;
 
             // start blk: blk_1, end_blk: blk_2
-            if (cur_blk_1 == blocks[net[i].tx]){
-                cur_blk_1_x = cur_blk_1.position.first + net[i].txCoord.first;
-                cur_blk_1_y = cur_blk_1.position.second + net[i].txCoord.second;
-                cur_blk_2_x = cur_blk_2.position.first + net[i].rxCoord.first;
-                cur_blk_2_y = cur_blk_2.position.second + net[i].rxCoord.second;
+            if (MST_out[j].first == &blocks[net[i].tx]){
+                cur_blk_1_x = (MST_out[j].first)->position.first + net[i].txCoord.first;
+                cur_blk_1_y = (MST_out[j].first)->position.second + net[i].txCoord.second;
+                cur_blk_2_x = (MST_out[j].second)->position.first + net[i].rxCoord.first;
+                cur_blk_2_y = (MST_out[j].second)->position.second + net[i].rxCoord.second;
                 // A*-search
                 astar_search(cur_blk_1_x, cur_blk_1_y, cur_blk_2_x, cur_blk_2_y);
             }
             // start blk: blk_2, end_blk: blk_1
-            else if (cur_blk_1 == blocks[net[i].rx]){
-                cur_blk_2_x = cur_blk_2.position.first + net[i].txCoord.first;
-                cur_blk_2_y = cur_blk_2.position.second + net[i].txCoord.second;
-                cur_blk_1_x = cur_blk_1.position.first + net[i].rxCoord.first;
-                cur_blk_1_y = cur_blk_1.position.second + net[i].rxCoord.second;
+            else if (MST_out[j].first == &blocks[net[i].rx]){
+                cur_blk_2_x = (MST_out[j].second)->position.first + net[i].txCoord.first;
+                cur_blk_2_y = (MST_out[j].second)->position.second + net[i].txCoord.second;
+                cur_blk_1_x = (MST_out[j].first)->position.first + net[i].rxCoord.first;
+                cur_blk_1_y = (MST_out[j].first)->position.second + net[i].rxCoord.second;
                 // A*-search
                 astar_search(cur_blk_2_x, cur_blk_2_y, cur_blk_1_x, cur_blk_1_y);
             }
