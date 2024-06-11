@@ -42,22 +42,51 @@ class Grid{
 
 
 int cal_h(int x, int y, int stop_x, int stop_y);
+void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y);
 
 int main(){
-    int origin_grid_x, origin_grid_y;
-    int stop_grid_x, stop_grid_y;
+    // step 1: net ordering
+    // TODO
+    
+    // step 2: routing
+    vector<int> net;
+    for (int i = 0; i < net.size(); i++){
+        // net[i][j]: i -> which net, j -> which pair
+        for (int j = 0; j < net[i].size(); j++){
+            Block cur_blk_1, cur_blk_2;
+            cur_blk_1 = net[i][j].first;
+            cur_blk_2 = net[i][j].second; 
 
-    cin >> origin_grid_x >> origin_grid_y;
-    cin >> stop_grid_x >> stop_grid_y;
+            int cur_blk_x, cur_blk_y;     
+            // start blk
+            if (cur_blk_1 == Tx){
+                cur_blk_x = net[i][j].first->block_port_region_x + tx_coord_x;
+                cur_blk_y = net[i][j].first->block_port_region_y + tx_coord_y;
+            }
+            // end blk
+            else if (cur_blk_1 == Rx){
+                cur_blk_x = net[i][j].first->block_port_region_x + rx_coord_x;
+                cur_blk_y = net[i][j].first->block_port_region_y + rx_coord_y;
+            }
+            // middle blk
+            else{
+                // port random?
+            }
 
+            
+        }
+    }
+    return 0;
+}
+
+void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y){
     vector<Grid*> Grid_list;
     // initial cur_grid
     Grid* cur_grid = new Grid(0, 0, origin_grid_x, origin_grid_y);
     Grid* nxt_grid = nullptr;
-
-    // 使用 pair 作为键的 unordered_map
     map<pair<int, int>, bool> coord_2_obstacle;
 
+    /*
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 7; j++) {
             coord_2_obstacle[make_pair(i, j)] = false;
@@ -72,6 +101,12 @@ int main(){
     coord_2_obstacle[make_pair(2, 4)] = true;
     coord_2_obstacle[make_pair(3, 4)] = true;
     coord_2_obstacle[make_pair(4, 4)] = true;
+    */
+    // test (block A -> block B)
+    // int A_x = A->getx() + tx;
+    // int A_y = A->gety() + ty;
+    // int B_x = B->getx() + rx;
+    // int B_Y = B->gety() + ry;
 
 
 
@@ -113,10 +148,11 @@ int main(){
 
     // Grid_list: all the grid that can possibly be chose, pop out if chosen
     int min_cost = 10000000;
+    int min_h = 10000000;
     for (int i = 0; i < Grid_list.size(); i++){
-        // TODO: tie?
-        if (Grid_list[i]->get_cost() < min_cost){
+        if ((Grid_list[i]->get_cost() <= min_cost) && (Grid_list[i]->get_cost() - Grid_list[i]->get_G() < min_h)){
             min_cost = Grid_list[i]->get_cost();
+            min_h = Grid_list[i]->get_cost() - Grid_list[i]->get_G();
             nxt_grid = Grid_list[i];
         }
     }
@@ -200,10 +236,11 @@ int main(){
         }
 
         min_cost = 10000000;
+        min_h = 10000000;
         for (int i = 0; i < Grid_list.size(); i++){
-            // TODO: tie?
-            if (Grid_list[i]->get_cost() < min_cost){
+            if ((Grid_list[i]->get_cost() <= min_cost) && (Grid_list[i]->get_cost() - Grid_list[i]->get_G() < min_h)){
                 min_cost = Grid_list[i]->get_cost();
+                min_h = Grid_list[i]->get_cost() - Grid_list[i]->get_G();
                 nxt_grid = Grid_list[i];
             }
         }
@@ -244,7 +281,7 @@ int main(){
         cur_grid = cur_grid->get_prev();
     }
 
-    return 0;
+    return;
 }
 
 int cal_h(int x, int y, int stop_x, int stop_y){
