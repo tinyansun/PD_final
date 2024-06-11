@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
     string defDirectory = argv[2];
     string cfgFile = argv[3];
     string connectionFile = argv[4];
-
+    
     DefParser defParser(defDirectory);
     if (!defParser.parse()) {
         cerr << "Failed to parse DEF files." << endl;
@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    Router router(tracks_per_um, defParser.getChipComponents(), defParser.getBlocks(), cfgParser.getBlocks(), connectionParser.getNets());
+    Router router(tracks_per_um, connectionParser.getmaxTrack(), defParser.getBoundingbox(), defParser.getBlocks(), cfgParser.getBlocks(), connectionParser.getNets());
 
     // Now, the router object contains all the necessary data for further processing.
 

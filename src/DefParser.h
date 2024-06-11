@@ -11,28 +11,37 @@ namespace fs = filesystem;
 
 class DefParser {
 public:
-    struct Component {
+    struct Region {
         string name;
-        string type;
-        pair<int, int> position;
-        string orientation;
+        pair<int, int> min, max;
 
-        Component(const string& n, const string& t, int x, int y, const string& o)
-            : name(n), type(t), position(x, y), orientation(o) {}
+        Region() = default;
+        Region(const string& n, int minX, int minY, int maxX, int maxY)
+            : name(n), min(make_pair(minX, minY)), max(make_pair(maxX, maxY)) {}
     };
 
     struct Block {
+        pair<int, int> position;
+        vector<pair<int, int>> shape;
+        string type;
+        string orientation;
+
         string name;
-        vector<Component> components;
-        
+        vector<pair<int, int>> final_shape;
+
+        int throughBlockNetNum;
+        bool isFeedthroughable;
+
         Block() = default;
-        Block(const string& n) : name(n) {}
+        Block(const string& n, string t, int x, int y, const string& o)
+            : name(n), type(t), position(x, y), orientation(o) {}
     };
 
 private:
+    pair<int, int> Boundingbox;
     string defDirectory;
-    vector<Component> chipComponents;
     unordered_map<string, Block> blocks;
+    unordered_map<string, Region> regions;
 
 public:
     DefParser(const string& dir)
@@ -47,7 +56,6 @@ public:
                 break;
             }
         }
-
         if (chipTopPath.empty() || !parseMainDefFile(chipTopPath)) {
             cerr << "Failed to parse chip_top.def file." << endl;
             return false;
@@ -79,8 +87,27 @@ public:
             string keyword;
             iss >> keyword;
 
+            if (keyword == "DIEAREA") {
+                int maxX, maxY;
+                iss>>keyword;
+                iss>>keyword;
+                iss>>keyword;
+                iss>>keyword;
+                iss>>keyword;
+
+                iss>>keyword;
+                maxX = stoi(keyword);
+                iss>>keyword;
+                maxY = stoi(keyword);
+                Boundingbox = make_pair(maxX, maxY);
+            }
+            
             if (keyword == "COMPONENTS") {
-                parseComponents(defFile, chipComponents);
+                parseComponents(defFile, blocks);
+            }
+            
+            if (keyword == "REGIONS") {
+                parseRegions(defFile, regions);
             }
             // Add other parsing sections as needed
         }
@@ -97,26 +124,36 @@ public:
         }
 
         string blockName = filePath.stem();
-        Block block(blockName);
-
+        blockName = "BLOCK_" + blockName.substr(blockName.find('_') + 1);
         string line;
+
         while (getline(defFile, line)) {
             istringstream iss(line);
             string keyword;
             iss >> keyword;
 
-            if (keyword == "COMPONENTS") {
-                parseComponents(defFile, block.components);
+            if (keyword == "DIEAREA") {
+                iss >> keyword;
+                int X, Y;
+                while(keyword == "("){
+                    iss >> keyword;
+                    X = stoi(keyword);
+                    iss >> keyword;
+                    Y = stoi(keyword);
+                    blocks[blockName].shape.push_back(make_pair(X, Y));
+
+                    iss >> keyword;
+                    iss >> keyword;
+                }
             }
             // Add other parsing sections as needed
         }
 
-        blocks[blockName] = block;
         defFile.close();
         return true;
     }
 
-    void parseComponents(ifstream& defFile, vector<Component>& components) {
+    void parseComponents(ifstream& defFile, unordered_map<string, Block>& blocks) {
         string line;
         while (getline(defFile, line)) {
             if (line.find("END COMPONENTS") != string::npos) {
@@ -124,20 +161,41 @@ public:
             }
 
             istringstream iss(line);
-            string name, type, posX, posY, orientation;
-            if (!(iss >> name >> type >> posX >> posY >> orientation)) {
+            string name, type, posX, posY, orientation, redundant;
+            if (!(iss >> redundant >> name >> type >> redundant >> redundant >> redundant >> posX >> posY >> redundant >> orientation >> redundant)) {
                 continue; // Ignore malformed lines
             }
-            cerr<<"X : "<<posX<<" Y : "<<posY<<endl;
-            components.emplace_back(name, type, stoi(posX), stoi(posY), orientation);
+            Block block(name, type, stoi(posX), stoi(posY), orientation);
+            blocks.insert({name, block});
         }
     }
 
-    const vector<Component>& getChipComponents() const {
-        return chipComponents;
+    void parseRegions(ifstream& defFile, unordered_map<string, Region>& regions) {
+        string line;
+        while (getline(defFile, line)) {
+            if (line.find("END REGIONS") != string::npos) {
+                break;
+            }
+
+            istringstream iss(line);
+            string name, minX, minY, maxX, maxY, orientation, redundant;
+            if (!(iss >> redundant >> name >> redundant >> minX >> minY >> redundant >> redundant >> maxX >> maxY)) {
+                continue; // Ignore malformed lines
+            }
+            Region region(name, stoi(minX), stoi(minY), stoi(maxX), stoi(maxY));
+            regions.insert({name, region});
+        }
+    }
+
+    const pair<int, int>& getBoundingbox() const {
+        return Boundingbox;
     }
 
     const unordered_map<string, Block>& getBlocks() const {
         return blocks;
+    }
+
+    const unordered_map<string, Region>& getRegions() const {
+        return regions;
     }
 };
