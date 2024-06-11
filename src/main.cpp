@@ -48,6 +48,7 @@ int main(int argc, char* argv[]) {
 
     // ---------------------------Sun's part--------------------------------
     vector<ConnectionJsonParser::NetInfo> net = router.getNets();
+    unordered_map<string, DefParser::Block> block = router.getBlocks();
 
     for(int i = 0; i < net.size(); i++){
         // new graph
@@ -65,10 +66,11 @@ int main(int argc, char* argv[]) {
         }
 
         // implement MST: get vector of pair of blks
-        vector<Edge*> MST_out = MST();
-
+        cur_graph.make_complete_g();
+        vector<Edge*> MST_out = cur_graph.MST();
+        
+        // Find coordinates of each pair
         for (int j = 0; j < MST_out.size(); j++){
-            // Find coordinates of each pair
             // Block*
             Block* cur_blk_1 = MST_out[j].first;
             Block* cur_blk_2 = MST_out[j].second;

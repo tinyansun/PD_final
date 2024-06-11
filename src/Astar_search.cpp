@@ -44,40 +44,6 @@ class Grid{
 int cal_h(int x, int y, int stop_x, int stop_y);
 void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y);
 
-int main(){
-    // step 1: net ordering
-    // TODO
-    
-    // step 2: routing
-    vector<int> net;
-    for (int i = 0; i < net.size(); i++){
-        // net[i][j]: i -> which net, j -> which pair
-        for (int j = 0; j < net[i].size(); j++){
-            Block cur_blk_1, cur_blk_2;
-            cur_blk_1 = net[i][j].first;
-            cur_blk_2 = net[i][j].second; 
-
-            int cur_blk_x, cur_blk_y;     
-            // start blk
-            if (cur_blk_1 == Tx){
-                cur_blk_x = net[i][j].first->block_port_region_x + tx_coord_x;
-                cur_blk_y = net[i][j].first->block_port_region_y + tx_coord_y;
-            }
-            // end blk
-            else if (cur_blk_1 == Rx){
-                cur_blk_x = net[i][j].first->block_port_region_x + rx_coord_x;
-                cur_blk_y = net[i][j].first->block_port_region_y + rx_coord_y;
-            }
-            // middle blk
-            else{
-                // port random?
-            }
-
-            
-        }
-    }
-    return 0;
-}
 
 void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y){
     vector<Grid*> Grid_list;
