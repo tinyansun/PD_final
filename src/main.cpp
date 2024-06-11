@@ -45,10 +45,66 @@ int main(int argc, char* argv[]) {
     
     // Now, the router object contains all the necessary data for further processing.
 
+
     // usage: 
     // Graph G;
     // for (block in net) G.push_v(&block)
     // G.make_complete_g()
     // global_wire = G.MST()
+
+
+    vector<ConnectionJsonParser::NetInfo> net = router.getNets();
+
+    for(int i = 0; i < net.size(); i++){
+        // new graph
+        Graph cur_graph = new Graph();
+
+        // push_v all blks of this net
+        Block* cur_blk_tx, cur_blk_rx; // how to decalre Block?
+        cur_blk_tx = blocks[net[i].tx]; // map string to block?
+        cur_graph.push_v(cur_blk_tx);
+
+        vector<string> blk_rx_list = net[i].rx;
+        for (int j = 0; j < blk_rx_list.size(); j++){
+            cur_blk_rx = blocks[blk_rx_list[j]];
+            cur_graph.push_v(cur_blk_rx);
+        }
+
+        // implement MST: get vector of pair of blks
+        vector<Edge*> MST_out = MST();
+
+        for (int j = 0; j < MST_out.size(); j++){
+            // Find coordinates of each pair
+            // Block*
+            Block* cur_blk_1 = MST_out[j].first;
+            Block* cur_blk_2 = MST_out[j].second;
+
+            double cur_blk_1_x, cur_blk_1_y;
+            double cur_blk_2_x, cur_blk_2_y;
+
+            // start blk: blk_1, end_blk: blk_2
+            if (cur_blk_1 == blocks[net[i].tx]){
+                cur_blk_1_x = cur_blk_1.position.first + net[i].txCoord.first;
+                cur_blk_1_y = cur_blk_1.position.second + net[i].txCoord.second;
+                cur_blk_2_x = cur_blk_2.position.first + net[i].rxCoord.first;
+                cur_blk_2_y = cur_blk_2.position.second + net[i].rxCoord.second;
+                // A*-search
+                astar_search(cur_blk_1_x, cur_blk_1_y, cur_blk_2_x, cur_blk_2_y);
+            }
+            // start blk: blk_2, end_blk: blk_1
+            else if (cur_blk_1 == blocks[net[i].rx]){
+                cur_blk_2_x = cur_blk_2.position.first + net[i].txCoord.first;
+                cur_blk_2_y = cur_blk_2.position.second + net[i].txCoord.second;
+                cur_blk_1_x = cur_blk_1.position.first + net[i].rxCoord.first;
+                cur_blk_1_y = cur_blk_1.position.second + net[i].rxCoord.second;
+                // A*-search
+                astar_search(cur_blk_2_x, cur_blk_2_y, cur_blk_1_x, cur_blk_1_y);
+            }
+            else{
+                cout << "Impossible! there's no middle blks!" << endl;
+            }
+        }
+    }
+
 }
 
