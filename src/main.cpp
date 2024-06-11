@@ -54,11 +54,11 @@ int main(int argc, char* argv[]) {
 
 
     vector<ConnectionJsonParser::NetInfo> net = router.getNets();
-    unordered_map<string, DefParser::Block> block = router.getBlocks();
+    unordered_map<string, DefParser::Block> blocks = router.getBlocks();
 
     for(int i = 0; i < net.size(); i++){
         // new graph
-        Graph cur_graph = new Graph();
+        Graph cur_graph;
 
         // push_v all blks of this net
         Block* cur_blk_tx, cur_blk_rx; // how to decalre Block?
@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
 
         // implement MST: get vector of pair of blks
         cur_graph.make_complete_g();
-        vector<Edge*> MST_out = cur_graph.MST();
+        vector<Block*> MST_out = cur_graph.MST();
         
         // Find coordinates of each pair
         for (int j = 0; j < MST_out.size(); j++){
