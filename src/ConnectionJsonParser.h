@@ -24,6 +24,7 @@ public:
 private:
     string filePath;
     vector<NetInfo> nets;
+    int maxTrack = 0;
 
 public:
     ConnectionJsonParser(const string& path) : filePath(path) {}
@@ -39,6 +40,9 @@ public:
         jsonFile >> j;
 
         for (const auto& net : j) {
+            if(net["NUM"] > maxTrack) {
+                maxTrack = net["NUM"];
+            }
             vector<string> rx = net["RX"];
             vector<pair<double, double>> rxCoord;
             for (const auto& coord : net["RX_COORD"]) {
@@ -61,5 +65,9 @@ public:
 
     const vector<NetInfo>& getNets() const {
         return nets;
+    }
+
+    const int& getmaxTrack() const {
+        return maxTrack;
     }
 };
