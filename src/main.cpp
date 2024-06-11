@@ -2,10 +2,12 @@
 #include <CfgJsonParser.h>
 #include <ConnectionJsonParser.h>
 #include <Router.h>
+#include <Graph.h>
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
+
     //start timer
     auto start = chrono::high_resolution_clock::now();
 
