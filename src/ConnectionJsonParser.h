@@ -4,6 +4,8 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
+#ifndef CONNECTION
+#define CONNECTION
 using namespace std;
 
 class ConnectionJsonParser {
@@ -71,3 +73,4 @@ public:
         return maxTrack;
     }
 };
+#endif

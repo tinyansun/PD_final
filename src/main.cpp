@@ -46,7 +46,13 @@ int main(int argc, char* argv[]) {
     // Now, the router object contains all the necessary data for further processing.
 
 
-    // ---------------------------Sun's part--------------------------------
+    // usage: 
+    // Graph G;
+    // for (block in net) G.push_v(&block)
+    // G.make_complete_g()
+    // global_wire = G.MST()
+
+
     vector<ConnectionJsonParser::NetInfo> net = router.getNets();
     unordered_map<string, DefParser::Block> block = router.getBlocks();
 
@@ -101,7 +107,6 @@ int main(int argc, char* argv[]) {
             }
         }
     }
-    // ---------------------------------------------------------------------------
 
 }
 
