@@ -13,13 +13,14 @@ public:
         int throughBlockNetNum;
         bool isFeedthroughable;
 
+        BlockInfo() = default;
         BlockInfo(const string& name, int tbn, bool ift)
             : blockName(name), throughBlockNetNum(tbn), isFeedthroughable(ift) {}
     };
 
 private:
     string filePath;
-    vector<BlockInfo> blocks;
+    unordered_map<string, BlockInfo> blocks;
 
 public:
     CfgJsonParser(const string& path) : filePath(path) {}
@@ -40,14 +41,14 @@ public:
                 block["through_block_net_num"],
                 block["is_feedthroughable"] == "True"
             );
-            blocks.push_back(bi);
+            blocks.insert({block["block_name"], bi});
         }
 
         jsonFile.close();
         return true;
     }
 
-    const vector<BlockInfo>& getBlocks() const {
+    const unordered_map<string, BlockInfo>& getBlocks() const {
         return blocks;
     }
 };
