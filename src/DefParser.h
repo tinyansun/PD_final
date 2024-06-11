@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <filesystem>
 
+#ifndef DEF
+#define DEF
 using namespace std;
 namespace fs = filesystem;
 
@@ -199,3 +201,4 @@ public:
         return regions;
     }
 };
+#endif

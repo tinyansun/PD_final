@@ -4,20 +4,24 @@
 // some useful function
 
 void Graph::test() {
-    V = vector<Node*> ();
-    E = vector<Edge*> ();
-    push_v(new Node(0, 1));
-    push_v(new Node(2, 1));
-    push_v(new Node(3, 0));
-    push_v(new Node(4, 3));
-    push_v(new Node(0, 0));
-    make_complete_g();
-    for (auto e: Dijk(unordered_set<Node* >(V.begin(), V.end()))) {
-        e->print();
-    }
+    // V = vector<Node*> ();
+    // E = vector<Edge*> ();
+    // push_v(new Node(0, 1));
+    // push_v(new Node(2, 1));
+    // push_v(new Node(3, 0));
+    // push_v(new Node(4, 3));
+    // push_v(new Node(0, 0));
+    // make_complete_g();
+    // MST();
+    // for (auto e: Dijk(unordered_set<Node* >(V.begin(), V.end()))) {
+    //     e->print();
+    // }
+    // for (auto e: MST()) {
+    //     e->print();
+    // }
 }
 
-vector<Edge*> Graph::MST() {
+vector<E_blk> Graph::MST() {
     vector<Edge*> E_buf(E);
     vector<Edge*> mst;
     sort(E_buf.begin(), E_buf.end(), [](Edge* & a, Edge* & b) { 
@@ -31,7 +35,11 @@ vector<Edge*> Graph::MST() {
     }
     reset();
     assert(mst.size() == V.size() - 1);
-    return mst;
+    vector<E_blk> ans;
+    for (auto e: mst) {
+        ans.push_back(e->get_egde_blk());
+    }
+    return ans;
 }
 
 Node* Graph::DS_Find (Node* v) {
@@ -167,24 +175,12 @@ double Edge::get_dist() {
         return dist_Mah(_start_n->get_coord(), _end_n->get_coord());
     }
 }
+E_blk Edge::get_egde_blk() {
+    return {_start_n->get_blk(), _end_n->get_blk()};
+}
 // Node
 // int Node::_global_flag = 0;
 void Node::print() {
-    // cout << _id << ":" << endl;
-    // cout << "new_found" << (_global_flag == _flag) << endl;
-    // cout << "--color : " << _color;
-    // cout << "  --f_t : " << _found_time;
-    // cout << "  --d_t : " << _death_time;
-    // cout << endl;
-    // if (_prev_node != 0) {
-    //     cout << "--prev : " << _prev_node->_id << endl;
-    // } else {
-    //     cout << "--prev : None" << endl; 
-    // }
-    // for (auto e: e_list) {
-    //     cout << getNeighbor(e)->_id << " ";
-    // }
-    // cout << endl;
 }
 Node* Node::getNeighbor(Edge* e) {
     assert(e != nullptr);

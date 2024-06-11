@@ -8,8 +8,17 @@
 #include <string>
 #include <set>
 #include <unordered_set>
+#include "DefParser.h"
+#include "ConnectionJsonParser.h"
+#include "CfgJsonParser.h"
 
+#ifndef GRAPH
+#define GRAPH
 using namespace std;
+
+using Blk = DefParser::Block;
+using Net = ConnectionJsonParser::NetInfo;
+using E_blk = pair<Blk*, Blk*>;
 
 class Graph;
 class Node;
@@ -32,17 +41,18 @@ class Edge {
             _max_dense = 20; // to modify
         }
         void print();
-        double get_dist();
         void set_len(double len) { _len = len; }
         void set_len() { _len = get_dist(); }
         void set_dense(double d) { _dense = d; }
         void add_dense(double d) { _dense += d; }
+        double get_dist();
         Node* get_s() { return _start_n; }
         Node* get_e() { return _end_n; }
         float get_w() { 
             if (_is_MST) return _len;
             else return _len; // need consider dense
         }
+        E_blk get_egde_blk();
     private:
         bool _is_MST = true;
         Node* _start_n;
@@ -60,8 +70,13 @@ class Edge {
 class Node {
     friend class Graph;
     public:
-        Node(float x, float y) {
+        Node(Blk* blk) {
             // _prev_node = 0;
+            _blk = blk;
+            Node(blk->position.first, blk->position.second);
+        }
+
+        Node(float x, float y) {
             _x = x;
             _y = y;
 
@@ -72,27 +87,19 @@ class Node {
             _val_dij = -1; // -1 = inf
             _is_add_dij = false;
             _heap_id = -1;
-
         }
         void print();
         Node* getNeighbor(Edge* e);
         pair<float, float> get_coord() {
             return {_x, _y};
         }
-
-        struct cmp_dij {
-            bool operator()(const Node *lhs, const Node *rhs) const {
-              if (lhs->_val_dij == -1) return false;
-              else if (rhs->_val_dij == -1) return true;
-              else return lhs->_val_dij < rhs->_val_dij;
-            }
-        };
         bool operator > (const Node v) const {
             if (_val_dij == v._val_dij) return false;
             else if (_val_dij == -1) return true;
             else if (v._val_dij == -1) return false;
             else return _val_dij > v._val_dij;
         }
+        Blk* get_blk() { return _blk; }
     private:
         float _x;
         float _y;
@@ -122,12 +129,17 @@ class Node {
             _val_dij = 0;
             _is_add_dij = true;
         }
+        Blk* _blk;
 
 };
 
 class Graph {
     public:
         Graph() {}
+        void push_v(Blk* blk) {
+            Node* v = new Node(blk);
+            push_v(v);
+        }
         void push_v(Node* v) {
             V.push_back(v);
         }
@@ -158,7 +170,7 @@ class Graph {
             for (auto& e: E) e->reset();
         }
 
-        vector<Edge*> MST();
+        vector<E_blk> MST();
         vector<Edge*> Dijk(unordered_set<Node*>);
 
         void test();
@@ -189,3 +201,4 @@ class Graph {
         vector<Node*> V;
         vector<Edge*> E;
 };
+#endif
