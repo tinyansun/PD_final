@@ -57,6 +57,10 @@ int main(int argc, char* argv[]) {
         router.printGrid();
     }
 
+    //output file
+    string out_file = string("case") + defDirectory.back() + "_net.rpt";
+    ofstream outFile(out_file);
+
     // Now, the router object contains all the necessary data for further processing.
 
 
@@ -170,6 +174,9 @@ int main(int argc, char* argv[]) {
                 if (!((grid_1_x == grid_2_x) && (grid_1_y == grid_2_y))){
                     Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
                 }
+                else{
+                    Astar_out.push_back(vector<pair<int, int>>(2, make_pair(grid_1_x, grid_1_y)));
+                }
             }
             // start blk: blk_2, end_blk: blk_1
             else if (MST_out[j].second == &blocks[net[i].tx]){
@@ -232,6 +239,9 @@ int main(int argc, char* argv[]) {
                 if (!((grid_1_x == grid_2_x) && (grid_1_y == grid_2_y))){
                     Astar_out.push_back(astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y));
                 }
+                else{
+                    Astar_out.push_back(vector<pair<int, int>>(2, make_pair(grid_1_x, grid_1_y)));
+                }
             }
             else{
                 cout << "Impossible! there's no middle blks!" << endl;
@@ -242,8 +252,6 @@ int main(int argc, char* argv[]) {
         // TODO:
 
         //net[i]._Astar_out = Astar_out;
-        string out_file = string("case") + defDirectory.back() + "_net.rpt";
-        ofstream outFile(out_file);
         outFile<<net[i].id<<endl;
         for (int j = 0; j < Astar_out.size(); j++){
             for (int k = 0; k < Astar_out[j].size()-1; k++){
