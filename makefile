@@ -2,7 +2,7 @@
 CXX = g++
 
 # Compiler flags
-CXXFLAGS = -std=c++17 -g#-O3
+CXXFLAGS = -std=c++17 -O3 #-g
 
 # Include directories
 INCLUDES = -I ./src

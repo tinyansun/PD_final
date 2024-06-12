@@ -11,24 +11,15 @@ namespace fs = filesystem;
 
 class DefParser {
 public:
-    struct Region {
-        string name;
-        pair<int, int> min, max;
-
-        Region() = default;
-        Region(const string& n, int minX, int minY, int maxX, int maxY)
-            : name(n), min(make_pair(minX, minY)), max(make_pair(maxX, maxY)) {}
-    };
-
     struct Block {
+        string name;
         pair<int, int> position;
         vector<pair<int, int>> shape;
+        vector<pair<int, int>> actual_shape;
+
+        bool region;
         string type;
         string orientation;
-
-        string name;
-        //vector<pair<int, int>> actual_shape;
-
         int throughBlockNetNum;
         bool isFeedthroughable;
 
@@ -41,7 +32,6 @@ private:
     pair<int, int> Boundingbox;
     string defDirectory;
     unordered_map<string, Block> blocks;
-    unordered_map<string, Region> regions;
 
 public:
     DefParser(const string& dir)
@@ -107,7 +97,7 @@ public:
             }
             
             if (keyword == "REGIONS") {
-                parseRegions(defFile, regions);
+                parseRegions(defFile, blocks);
             }
             // Add other parsing sections as needed
         }
@@ -146,6 +136,11 @@ public:
                     iss >> keyword;
                 }
             }
+            
+            if(blocks[blockName].shape.size() == 2){
+                blocks[blockName].shape.insert(blocks[blockName].shape.begin() + 1, (make_pair(blocks[blockName].shape[1].first, 0)));
+                blocks[blockName].shape.insert(blocks[blockName].shape.begin() + 3, (make_pair(0, blocks[blockName].shape[2].second)));
+            }
             // Add other parsing sections as needed
         }
 
@@ -166,11 +161,12 @@ public:
                 continue; // Ignore malformed lines
             }
             Block block(name, type, stoi(posX), stoi(posY), orientation);
+            block.region = false;
             blocks.insert({name, block});
         }
     }
 
-    void parseRegions(ifstream& defFile, unordered_map<string, Region>& regions) {
+    void parseRegions(ifstream& defFile, unordered_map<string, Block>& blocks) {
         string line;
         while (getline(defFile, line)) {
             if (line.find("END REGIONS") != string::npos) {
@@ -182,8 +178,14 @@ public:
             if (!(iss >> redundant >> name >> redundant >> minX >> minY >> redundant >> redundant >> maxX >> maxY)) {
                 continue; // Ignore malformed lines
             }
-            Region region(name, stoi(minX), stoi(minY), stoi(maxX), stoi(maxY));
-            regions.insert({name, region});
+            Block block(name, "",  stoi(minX), stoi(minY), "");
+            block.shape.push_back(make_pair(0, 0));
+            block.shape.push_back(make_pair(stoi(maxX) - stoi(minX), 0));
+            block.shape.push_back(make_pair(stoi(maxX) - stoi(minX), stoi(maxY) - stoi(minY)));
+            block.shape.push_back(make_pair(0, stoi(maxY) - stoi(minY)));
+            block.orientation = "N";
+            block.region = true;
+            blocks.insert({name, block});
         }
     }
 
@@ -193,9 +195,5 @@ public:
 
     const unordered_map<string, Block>& getBlocks() const {
         return blocks;
-    }
-
-    const unordered_map<string, Region>& getRegions() const {
-        return regions;
     }
 };

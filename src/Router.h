@@ -3,8 +3,14 @@
 #include <vector>
 #include <unordered_map>
 #include <chrono>
+#include <utility>
+#include <fstream>
+#include <nlohmann/json.hpp>
 using namespace std;
 
+using json = nlohmann::json;
+
+//calcluate rectangle outline
 class Polygon {
 public:
 
@@ -70,6 +76,7 @@ private:
 
 class Grid{
     public:
+        int color;
         // constuctor
         Grid() { }
         Grid(int G, int cost, int x, int y, bool throughable) :
@@ -82,6 +89,7 @@ class Grid{
         Grid* get_prev() { return _prevgrid;}
         bool get_throughable() { return _throughable;}
         vector<DefParser::Block*> get_blocks() { return _blocks;}
+        int get_wirenum() { return wirenum;}
         // set
         void set_G(int G) {_G = G;}
         void set_cost(int cost) {_cost = cost;}
@@ -90,6 +98,7 @@ class Grid{
         void set_prev(Grid* prev) {_prevgrid = prev;}
         void set_throughable(bool throughable) {_throughable = throughable;}
         void add_block(DefParser::Block* b) {_blocks.push_back(b);}
+        void set_wirenum(int num) { wirenum = num;}
         // destructor
         ~Grid(){ }
     private:
@@ -100,11 +109,10 @@ class Grid{
         Grid* _prevgrid;
         bool _throughable;
         vector<DefParser::Block*> _blocks;
+        int wirenum;
 };
 
 class Router {
-public:
-    Grid** grid_graph;
 private:
     int tracks_per_um;
     int maxTrack;
@@ -127,11 +135,15 @@ public:
 
             //init blocks
             for (auto it = blocks.begin(); it != blocks.end(); ++it) {
-                string blockName = "BLOCK_" + it->second.type.substr(it->second.type.find('_') + 1);
-                it->second.shape = blocks[blockName].shape;
-
-                it->second.throughBlockNetNum = blockInfos[it->second.name].throughBlockNetNum;
-                it->second.isFeedthroughable = blockInfos[it->second.name].isFeedthroughable;
+                if(!it->second.region){
+                    string blockName = "BLOCK_" + it->second.type.substr(it->second.type.find('_') + 1);
+                    it->second.shape = blocks[blockName].shape;
+                    it->second.throughBlockNetNum = blockInfos[it->second.name].throughBlockNetNum;
+                    it->second.isFeedthroughable = blockInfos[it->second.name].isFeedthroughable;
+                }
+                else{
+                    it->second.isFeedthroughable = true;
+                }
             }
 
             //init grid_graph
@@ -146,10 +158,14 @@ public:
             //traverse blks and set throughable
             for (auto it = blocks.begin(); it != blocks.end(); ++it) {
                 //calculate actual shape
-                //it->second.actual_shape = calculateActualCoordinate(it->second.position, it->second.shape, it->second.orientation);
-                
+                it->second.actual_shape = calculateActualCoordinate(it->second.position, it->second.shape, it->second.orientation);
+                //skip region and feedthroughable block
+                if(it->second.isFeedthroughable || it->second.region){
+                    continue;
+                }
+
                 //set throughable
-                Polygon polygon(calculateActualCoordinate(it->second.position, it->second.shape, it->second.orientation));
+                Polygon polygon(it->second.actual_shape);
                 int minX, maxX, minY, maxY;
                 polygon.getBounds(minX, maxX, minY, maxY);
                 for (int i = minX; i <= maxX; ++i) {
@@ -164,6 +180,9 @@ public:
                 }
             }
         }
+    
+    //==================data member access==================
+    Grid** grid_graph;
 
     // Function to get tracks per um
     const int& getTracksPerUm() const {
@@ -185,6 +204,7 @@ public:
         return nets;
     }
 
+    //==================grid shift function==================
     // Function to calculate grid_index
     const pair<int, int> grid_index(pair<double, double> coordinate) const {
         int shift_x = floor(coordinate.first/grid_width);
@@ -199,6 +219,60 @@ public:
         return make_pair(shift_x, shift_y);
     }
 
+    //==================grid print function==================
+    //used to output necessary information for visualization
+    void printPolygon() {
+        json j;
+        int count = 0;
+        for (auto it = blocks.begin(); it != blocks.end(); ++it) {
+            vector<pair<int, int>> actualPoints = calculateActualCoordinate(it->second.position, it->second.shape, it->second.orientation);
+
+            json poly;
+            for (const auto& point : actualPoints) {
+                poly.push_back({point.first, point.second});
+            }
+            if(it->second.region) j.push_back({{"points", poly}, {"color", "yellow"}});
+            else if(it->second.isFeedthroughable) j.push_back({{"points", poly}, {"color", "orange"}});
+            else j.push_back({{"points", poly}, {"color", "grey"}});
+
+        }
+        ofstream outFile("polygons.json");
+        outFile << j.dump(4);
+        outFile.close();
+    }
+
+    void printGrid() {
+        for (auto it = blocks.begin(); it != blocks.end(); ++it) {
+            //set throughable
+            Polygon polygon(it->second.actual_shape);
+            int minX, maxX, minY, maxY;
+            polygon.getBounds(minX, maxX, minY, maxY);
+            for (int i = minX; i <= maxX; ++i) {
+                for (int j = minY; j <= maxY; ++j) {
+                    assert(i < (grid_index(boundingbox).first+1));
+                    assert(j < (grid_index(boundingbox).second+1));
+                    if (polygon.isPointInside(i, j)) {
+                        if(it->second.region) grid_graph[i][j].color = 2;
+                        else if(it->second.isFeedthroughable) grid_graph[i][j].color = 1;
+                        else grid_graph[i][j].color = 0;
+                    }
+                }
+            }
+        }
+
+        ofstream outFile("grid.csv");
+        for (int i = 0; i < grid_index(getBoundingbox()).first; ++i) {
+            for (int j = 0; j < grid_index(getBoundingbox()).second; ++j) {
+                outFile << grid_graph[i][j].color;
+                if (j < grid_index(getBoundingbox()).second - 1) {
+                    outFile << ",";
+                }
+            }
+            outFile << "\n";
+        }
+        outFile.close();
+    }
+    //==================other parse function==================
     pair<int, int> transformPoint(const pair<int, int>& point, const string& orientation, int width, int height) {
         if (orientation == "N") {
             // North:
