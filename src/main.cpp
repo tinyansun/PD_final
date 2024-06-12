@@ -165,22 +165,8 @@ int main(int argc, char* argv[]) {
         }
         
         // store the result back to net-struct   
-        // TODO:
-
         net[i]._Astar_out = Astar_out;
 
-        /*
-        for (int j = 0; j < Astar_out.size(); j++){
-            vector<Grid> tmp;
-            for (int k = 0; k < Astar_out[j].size(); k++){
-                // net[i]._Astar_out[j][k] = Astar_out[j][k];
-                tmp.push_back(Astar_out[j][k]);
-                
-            }
-            //net[i]._Astar_out[j].push_back(Astar_out[j][k]);
-            net[i]._Astar_out.push_back(tmp);
-        }
-        */
     }
 
     return 0;
