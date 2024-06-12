@@ -6,6 +6,8 @@
 
 using namespace std;
 
+class Grid;
+
 class ConnectionJsonParser {
 public:
     struct NetInfo {
@@ -15,6 +17,8 @@ public:
         int numTracks;
         pair<double, double> txCoord;
         vector<pair<double, double>> rxCoord;
+        // sun
+        vector<vector<Grid>> _Astar_out;
 
         NetInfo(int id, const string& tx, const vector<string>& rx, int num,
                 pair<double, double> txc, const vector<pair<double, double>>& rxc)

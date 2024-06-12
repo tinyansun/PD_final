@@ -6,6 +6,9 @@
 #include <utility>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <DefParser.h>
+#include <CfgJsonParser.h>
+#include <ConnectionJsonParser.h>
 using namespace std;
 
 using json = nlohmann::json;
@@ -89,7 +92,7 @@ class Grid{
         Grid* get_prev() { return _prevgrid;}
         bool get_throughable() { return _throughable;}
         vector<DefParser::Block*> get_blocks() { return _blocks;}
-        int get_wirenum() { return wirenum;}
+        int get_wirenum() {return _wirenum;}
         // set
         void set_G(int G) {_G = G;}
         void set_cost(int cost) {_cost = cost;}
@@ -98,7 +101,7 @@ class Grid{
         void set_prev(Grid* prev) {_prevgrid = prev;}
         void set_throughable(bool throughable) {_throughable = throughable;}
         void add_block(DefParser::Block* b) {_blocks.push_back(b);}
-        void set_wirenum(int num) { wirenum = num;}
+        void set_wirenum(int wirenum) {_wirenum = wirenum;}
         // destructor
         ~Grid(){ }
     private:
@@ -109,7 +112,7 @@ class Grid{
         Grid* _prevgrid;
         bool _throughable;
         vector<DefParser::Block*> _blocks;
-        int wirenum;
+        int _wirenum;
 };
 
 class Router {
@@ -327,7 +330,7 @@ public:
         }
         
         return actualPoints;
-    }
+        }
 
     //data member
 };
