@@ -87,8 +87,18 @@ int main(int argc, char* argv[]) {
                 cur_blk_1_y = (MST_out[j].first)->position.second + net[i].txCoord.second;
                 cur_blk_2_x = (MST_out[j].second)->position.first + net[i].rxCoord.first;
                 cur_blk_2_y = (MST_out[j].second)->position.second + net[i].rxCoord.second;
+
+                // change to grid coord
+                double grid_1_x, grid_1_y;
+                double grid_2_x, grid_2_y;
+
+                grid_1_x = router.grid_index(make_pair(cur_blk_1_x, cur_blk_1_y)).first;
+                grid_1_y = router.grid_index(make_pair(cur_blk_1_x, cur_blk_1_y)).second;
+                grid_2_x = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).first;
+                grid_2_y = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).second;
+
                 // A*-search
-                astar_search(router, cur_blk_1_x, cur_blk_1_y, cur_blk_2_x, cur_blk_2_y);
+                astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y);
             }
             // start blk: blk_2, end_blk: blk_1
             else if (MST_out[j].first == &blocks[net[i].rx]){
@@ -96,8 +106,18 @@ int main(int argc, char* argv[]) {
                 cur_blk_2_y = (MST_out[j].second)->position.second + net[i].txCoord.second;
                 cur_blk_1_x = (MST_out[j].first)->position.first + net[i].rxCoord.first;
                 cur_blk_1_y = (MST_out[j].first)->position.second + net[i].rxCoord.second;
+
+                // change to grid coord
+                double grid_1_x, grid_1_y;
+                double grid_2_x, grid_2_y;
+
+                grid_1_x = router.grid_index(make_pair(cur_blk_1_x, cur_blk_1_y)).first;
+                grid_1_y = router.grid_index(make_pair(cur_blk_1_x, cur_blk_1_y)).second;
+                grid_2_x = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).first;
+                grid_2_y = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).second;
+
                 // A*-search
-                astar_search(router, cur_blk_2_x, cur_blk_2_y, cur_blk_1_x, cur_blk_1_y);
+                astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y);
             }
             else{
                 cout << "Impossible! there's no middle blks!" << endl;
