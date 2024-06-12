@@ -95,6 +95,7 @@ class Grid{
         bool get_throughable() { return _throughable;}
         vector<DefParser::Block*> get_blocks() { return _blocks;}
         int get_wirenum() {return _wirenum;}
+        bool get_explored() { return _explored;}
         // set
         void set_G(int G) {_G = G;}
         void set_cost(int cost) {_cost = cost;}
@@ -104,6 +105,7 @@ class Grid{
         void set_throughable(bool throughable) {_throughable = throughable;}
         void add_block(DefParser::Block* b) {_blocks.push_back(b);}
         void set_wirenum(int wirenum) {_wirenum = wirenum;}
+        void set_explored(bool explored) {_explored = explored;}
         // destructor
         ~Grid(){ }
     private:
@@ -115,6 +117,7 @@ class Grid{
         bool _throughable;
         vector<DefParser::Block*> _blocks;
         int _wirenum;
+        bool _explored;
 };
 
 class Router {
