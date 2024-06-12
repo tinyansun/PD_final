@@ -56,6 +56,8 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         right_cost = 1 + cal_h(origin_grid_x + 1, origin_grid_y, stop_grid_x, stop_grid_y);
         right_grid = new Grid(1, right_cost, origin_grid_x + 1, origin_grid_y, 0);
         right_grid->set_prev(cur_grid);
+        // set_explored
+        router.grid_graph[origin_grid_x + 1][origin_grid_y].set_explored(1);
         Grid_list.push_back(right_grid);
     }
 
@@ -63,6 +65,8 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         left_cost = 1 + cal_h(origin_grid_x - 1, origin_grid_y, stop_grid_x, stop_grid_y);
         left_grid = new Grid(1, left_cost, origin_grid_x - 1, origin_grid_y, 0);
         left_grid->set_prev(cur_grid);
+        // set_explored
+        router.grid_graph[origin_grid_x - 1][origin_grid_y].set_explored(1);
         Grid_list.push_back(left_grid);
     }
 
@@ -70,6 +74,8 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         up_cost = 1 + cal_h(origin_grid_x, origin_grid_y + 1, stop_grid_x, stop_grid_y);
         up_grid = new Grid(1, up_cost, origin_grid_x, origin_grid_y + 1, 0);
         up_grid->set_prev(cur_grid);
+        // set_explored
+        router.grid_graph[origin_grid_x][origin_grid_y + 1].set_explored(1);
         Grid_list.push_back(up_grid);
     }
 
@@ -77,6 +83,8 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         down_cost = 1 + cal_h(origin_grid_x, origin_grid_y - 1, stop_grid_x, stop_grid_y);
         down_grid = new Grid(1, down_cost, origin_grid_x, origin_grid_y - 1, 0);
         down_grid->set_prev(cur_grid);
+        // set_explored
+        router.grid_graph[origin_grid_x][origin_grid_y - 1].set_explored(1);
         Grid_list.push_back(down_grid);
     }
 
@@ -144,6 +152,8 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
             //cout << "right: " << right_cost << endl;
             right_grid = new Grid(cur_grid->get_G() + 1, right_cost, cur_x + 1, cur_y, 0);
             right_grid->set_prev(cur_grid);
+            // set_explored
+            router.grid_graph[cur_x + 1][cur_y].set_explored(1);
             Grid_list.push_back(right_grid);
         }
 
@@ -152,6 +162,8 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
             //cout << "left: " << left_cost << endl;
             left_grid = new Grid(cur_grid->get_G() + 1, left_cost, cur_x - 1, cur_y, 0);
             left_grid->set_prev(cur_grid);
+            // set_explored
+            router.grid_graph[cur_x - 1][cur_y].set_explored(1);
             Grid_list.push_back(left_grid);
         }
         
@@ -160,6 +172,8 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
             //cout << "up: " << up_cost << endl;
             up_grid = new Grid(cur_grid->get_G() + 1, up_cost, cur_x, cur_y + 1, 0);
             up_grid->set_prev(cur_grid);
+            // set_explored
+            router.grid_graph[cur_x][cur_y + 1].set_explored(1);
             Grid_list.push_back(up_grid);
         }
 
@@ -168,6 +182,8 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
             //cout << "down: " << down_cost << endl;
             down_grid = new Grid(cur_grid->get_G() + 1, down_cost, cur_x, cur_y - 1, 0);
             down_grid->set_prev(cur_grid);
+            // set_explored
+            router.grid_graph[cur_x][cur_y - 1].set_explored(1);
             Grid_list.push_back(down_grid);
         }
 
