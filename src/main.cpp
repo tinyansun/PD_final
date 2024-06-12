@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
         Graph cur_graph;
 
         // record path for each net, i: which block pair, j: grids on path
-        vector<vector<Grid*>> Astar_out;
+        vector<vector<pair<int, int>>> Astar_out;
 
         // push_v all blks of this net
         cur_graph.push_v(&blocks[net[i].tx]);
