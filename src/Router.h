@@ -79,7 +79,7 @@ private:
 
 class Grid{
     public:
-        int color;
+        int color = 3;
         // constuctor
         Grid() { }
         Grid(int G, int cost, int x, int y, bool throughable) :

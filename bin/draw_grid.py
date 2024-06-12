@@ -28,12 +28,33 @@ def main():
     for key, color in color_map.items():
         image[grid == key] = color
 
-    # 保存图像到文件
-    plt.imshow(image, aspect='equal')
-    plt.axis('off')
-    plt.savefig(args.output, bbox_inches='tight', pad_inches=0.1)
+    image_rotated = np.rot90(image)
 
-    print(f"Grid image saved as {args.output}")
+    # 保存图像到文件
+    fig, ax = plt.subplots()
+    ax.imshow(image_rotated, aspect='equal')
+
+    # 设置刻度
+    num_rows, num_cols = grid.shape
+    x_ticks = np.linspace(0, num_cols - 1, num=5)
+    y_ticks = np.linspace(0, num_rows - 1, num=5)
+    ax.set_xticks(x_ticks)
+    ax.set_yticks(y_ticks)
+
+    # 设置刻度标签为0到1的比例
+    ax.set_xticklabels([f'{x / (num_cols - 1):.2f}' for x in x_ticks])
+    ax.set_yticklabels([f'{(num_rows - 1 - y) / (num_rows - 1):.2f}' for y in y_ticks])
+
+    # 隐藏坐标轴边框
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+
+    # 隐藏刻度线
+    ax.tick_params(left=False, bottom=False)
+
+    plt.savefig(args.output, bbox_inches='tight', pad_inches=0.1)
 
 if __name__ == "__main__":
     main()
