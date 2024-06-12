@@ -19,7 +19,7 @@ public:
         vector<pair<double, double>> rxCoord;
         // sun
         // result
-        vector<vector<Grid>> _Astar_out;
+        vector<vector<Grid*>> _Astar_out;
 
         NetInfo(int id, const string& tx, const vector<string>& rx, int num,
                 pair<double, double> txc, const vector<pair<double, double>>& rxc)

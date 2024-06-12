@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
         Graph cur_graph;
 
         // record path for each net, i: which block pair, j: grids on path
-        vector<vector<Grid>> Astar_out;
+        vector<vector<Grid*>> Astar_out;
 
         // push_v all blks of this net
         cur_graph.push_v(&blocks[net[i].tx]);
@@ -131,7 +131,7 @@ int main(int argc, char* argv[]) {
                 grid_2_y = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).second;
 
                 // A*-search
-                Astar_out[j] = astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y);
+                Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
             }
             // start blk: blk_2, end_blk: blk_1
             else if (MST_out[j].second == &blocks[net[i].tx]){
@@ -157,7 +157,7 @@ int main(int argc, char* argv[]) {
                 grid_2_y = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).second;
 
                 // A*-search
-                Astar_out[j] = astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y);
+                Astar_out.push_back(astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y));
             }
             else{
                 cout << "Impossible! there's no middle blks!" << endl;

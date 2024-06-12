@@ -136,7 +136,7 @@ public:
            const vector<ConnectionJsonParser::NetInfo>& nts)
         : tracks_per_um(tpu), maxTrack(mT), boundingbox(box), blocks(blks), blockInfos(blkInfos), nets(nts) {
             //grid_width = ceil((double)maxTrack / (double)tracks_per_um);
-            grid_width = 2000;
+            grid_width = 200000;
 
             //init blocks
             for (auto it = blocks.begin(); it != blocks.end(); ++it) {

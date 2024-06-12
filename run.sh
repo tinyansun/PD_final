@@ -1,7 +1,7 @@
-#測試測資4 : ./test.sh 4
-#測試測資5 : ./test.sh 5
-#default測資4和5 : ./test.sh
-#畫圖 : ./test.sh -draw [4|5|all]
+#測試測資4 : ./run.sh 4
+#測試測資5 : ./run.sh 5
+#default測資4和5 : ./run.sh
+#畫圖 : ./run.sh -draw [4|5|all]
 make
 
 if [ -n "$1" ]; then
