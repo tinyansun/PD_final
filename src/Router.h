@@ -1,3 +1,5 @@
+#ifndef ROUTER_H
+#define ROUTER_H
 #include <cassert>
 #include <iostream>
 #include <vector>
@@ -5,7 +7,7 @@
 #include <chrono>
 #include <utility>
 #include <fstream>
-#include <nlohmann/json.hpp>
+#include <json.hpp>
 #include <DefParser.h>
 #include <CfgJsonParser.h>
 #include <ConnectionJsonParser.h>
@@ -336,3 +338,4 @@ public:
 };
 
 
+#endif // ROUTER_H

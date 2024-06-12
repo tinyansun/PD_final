@@ -95,8 +95,8 @@ int main(int argc, char* argv[]) {
         for (int j = 0; j < MST_out.size(); j++){
 
             // Block*
-            Block* cur_blk_1 = MST_out[j].first;
-            Block* cur_blk_2 = MST_out[j].second;
+            DefParser::Block* cur_blk_1 = MST_out[j].first;
+            DefParser::Block* cur_blk_2 = MST_out[j].second;
 
             double cur_blk_1_x, cur_blk_1_y;
             double cur_blk_2_x, cur_blk_2_y;
@@ -160,6 +160,9 @@ int main(int argc, char* argv[]) {
             }
         }
         
+        // store the result back to net-struct   
+        // TODO:
+        
         /*
         std::vector<std::vector<int> > normal;
         normal.resize(20);
@@ -172,8 +175,7 @@ int main(int argc, char* argv[]) {
         /*
         vector<Grid> tmp;
         net[i]._Astar_out = Astar_out;
-
-        // store the result back to net-struct        
+     
         for (int j = 0; j < Astar_out.size(); j++){
             vector<Grid> tmp;
             for (int k = 0; k < Astar_out[j].size(); k++){
