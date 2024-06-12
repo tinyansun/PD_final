@@ -223,6 +223,12 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         //     cout << Grid_list[i]->get_cost() << " ";
         // }
         // cout << endl;
+        
+        // test
+        if (Grid_list.size() == 0){
+            cout << "fail routing" << endl;
+            break;
+        }
     }
 
     cout << "final cost: " << cur_grid->get_cost() << endl;
