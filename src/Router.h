@@ -85,7 +85,7 @@ class Grid{
         // constuctor
         Grid() { }
         Grid(int G, int cost, int x, int y, bool throughable) :
-            _G(G), _cost(cost), _x(x), _y(y), _throughable(throughable), _prevgrid(nullptr) { }
+            _G(G), _cost(cost), _x(x), _y(y), _throughable(throughable), _prevgrid(nullptr), _wirenum(0), _explored(0) { }
         // get
         int get_G() {return _G;}
         int get_cost() {return _cost;}
