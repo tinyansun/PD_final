@@ -149,6 +149,7 @@ public:
             //grid_width = ceil((double)maxTrack / (double)tracks_per_um);
             grid_width = 200000;
 
+            cerr<<grid_index(getBoundingbox()).first+1<<" "<<grid_index(getBoundingbox()).second+1<<endl;
             //init blocks
             for (auto it = blocks.begin(); it != blocks.end(); ++it) {
                 if(!it->second.region){
@@ -164,9 +165,9 @@ public:
 
             //init grid_graph
             grid_graph = new Grid*[grid_index(boundingbox).first+1];
-            for (int i = 0; i < grid_index(boundingbox).first; i++) {
+            for (int i = 0; i < grid_index(boundingbox).first+1; i++) {
                 grid_graph[i] = new Grid[grid_index(boundingbox).second+1];
-                for (int j = 0; j < grid_index(boundingbox).second; ++j) {
+                for (int j = 0; j < grid_index(boundingbox).second+1; ++j) {
                     grid_graph[i][j] = Grid(0, 0, i, j, 1);
                 }
             }

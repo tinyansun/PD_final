@@ -225,6 +225,18 @@ int main(int argc, char* argv[]) {
         }
         
         // store the result back to net-struct   
+        // TODO:
+
+        //net[i]._Astar_out = Astar_out;
+        string out_file = string("case") + defDirectory.back() + "_net.rpt";
+        ofstream outFile(out_file);
+        outFile<<net[i].id<<endl;
+        for (int j = 0; j < Astar_out.size(); j++){
+            for (int k = 0; k < Astar_out[j].size()-1; k++){
+                outFile<<"("<<Astar_out[j][k].first<<","<<Astar_out[j][k].second<<"),("<<Astar_out[j][k+1].first<<","<<Astar_out[j][k+1].second<<")"<<endl;
+            }
+        }
+        
         net[i]._Astar_out = Astar_out;
 
     }
