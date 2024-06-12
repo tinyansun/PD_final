@@ -153,7 +153,8 @@ int main(int argc, char* argv[]) {
 
                 // if cant L-shape, then A-star
                 if ((down_able == 1) && (right_able == 1)){
-
+                    vector<pair<int, int>> points;
+                    
                 }
                 else if ((left_able == 1) && (up_able == 1)){
 
