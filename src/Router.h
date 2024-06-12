@@ -85,7 +85,7 @@ class Grid{
         // constuctor
         Grid() { }
         Grid(int G, int cost, int x, int y, bool throughable) :
-            _G(G), _cost(cost), _x(x), _y(y), _throughable(throughable), _prevgrid(nullptr) { }
+            _G(G), _cost(cost), _x(x), _y(y), _throughable(throughable), _prevgrid(nullptr), _wirenum(0), _explored(0) { }
         // get
         int get_G() {return _G;}
         int get_cost() {return _cost;}
@@ -95,6 +95,7 @@ class Grid{
         bool get_throughable() { return _throughable;}
         vector<DefParser::Block*> get_blocks() { return _blocks;}
         int get_wirenum() {return _wirenum;}
+        bool get_explored() { return _explored;}
         // set
         void set_G(int G) {_G = G;}
         void set_cost(int cost) {_cost = cost;}
@@ -104,6 +105,15 @@ class Grid{
         void set_throughable(bool throughable) {_throughable = throughable;}
         void add_block(DefParser::Block* b) {_blocks.push_back(b);}
         void set_wirenum(int wirenum) {_wirenum = wirenum;}
+        void set_explored(bool explored) {_explored = explored;}
+
+        // reset 
+        void reset(){
+            set_G(0);
+            set_cost(0);
+            set_explored(0);
+        }
+        
         // destructor
         ~Grid(){ }
     private:
@@ -115,6 +125,7 @@ class Grid{
         bool _throughable;
         vector<DefParser::Block*> _blocks;
         int _wirenum;
+        bool _explored;
 };
 
 class Router {
@@ -138,6 +149,7 @@ public:
             //grid_width = ceil((double)maxTrack / (double)tracks_per_um);
             grid_width = 200000;
 
+            cerr<<grid_index(getBoundingbox()).first+1<<" "<<grid_index(getBoundingbox()).second+1<<endl;
             //init blocks
             for (auto it = blocks.begin(); it != blocks.end(); ++it) {
                 if(!it->second.region){
@@ -153,9 +165,9 @@ public:
 
             //init grid_graph
             grid_graph = new Grid*[grid_index(boundingbox).first+1];
-            for (int i = 0; i < grid_index(boundingbox).first; i++) {
+            for (int i = 0; i < grid_index(boundingbox).first+1; i++) {
                 grid_graph[i] = new Grid[grid_index(boundingbox).second+1];
-                for (int j = 0; j < grid_index(boundingbox).second; ++j) {
+                for (int j = 0; j < grid_index(boundingbox).second+1; ++j) {
                     grid_graph[i][j] = Grid(0, 0, i, j, 1);
                 }
             }
