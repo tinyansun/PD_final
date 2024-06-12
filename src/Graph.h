@@ -68,7 +68,16 @@ class Node {
         Node(Blk* blk) {
             // _prev_node = 0;
             _blk = blk;
-            Node(blk->position.first, blk->position.second);
+            _x = blk->position.first;
+            _y = blk->position.second;
+
+            _ptDS = this;
+            _rank = 1;
+
+            _prev_e = nullptr;
+            _val_dij = -1; // -1 = inf
+            _is_add_dij = false;
+            _heap_id = -1;
         }
 
         Node(float x, float y) {
