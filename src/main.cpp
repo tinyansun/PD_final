@@ -131,6 +131,7 @@ int main(int argc, char* argv[]) {
                 grid_2_x = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).first;
                 grid_2_y = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).second;
 
+                /*
                 // L-shape
                 bool left_able = true;
                 bool right_able = true;
@@ -163,6 +164,10 @@ int main(int argc, char* argv[]) {
                     // A*-search
                     Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
                 }
+                */
+
+                // A*-search
+                Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
             }
             // start blk: blk_2, end_blk: blk_1
             else if (MST_out[j].second == &blocks[net[i].tx]){
@@ -187,6 +192,7 @@ int main(int argc, char* argv[]) {
                 grid_2_x = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).first;
                 grid_2_y = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).second;
 
+                /*
                 // L-shape
                 bool left_able = true;
                 bool right_able = true;
@@ -218,6 +224,10 @@ int main(int argc, char* argv[]) {
                     // A*-search
                     Astar_out.push_back(astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y));
                 }
+                */
+
+                // A*-search
+                Astar_out.push_back(astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y));
             }
             else{
                 cout << "Impossible! there's no middle blks!" << endl;
