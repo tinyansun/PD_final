@@ -2,13 +2,13 @@
 CXX = g++
 
 # Compiler flags
-CXXFLAGS = -std=c++17 -g#-O3
+CXXFLAGS = -std=c++17 -O3 #-g
 
 # Include directories
 INCLUDES = -I ./src
 
 # Source files
-SRCS = ./src/main.cpp ./src/Astar_search.cpp ./src/Graph.cpp
+SRCS = ./src/main.cpp ./src/Graph.cpp
 
 # Header files
 HEADERS = ./src/CfgJsonParser.h ./src/ConnectionJsonParser.h ./src/DefParser.h ./src/Router.h ./src/Graph.h

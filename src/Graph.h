@@ -8,12 +8,7 @@
 #include <string>
 #include <set>
 #include <unordered_set>
-#include "DefParser.h"
-#include "ConnectionJsonParser.h"
-#include "CfgJsonParser.h"
 
-#ifndef GRAPH
-#define GRAPH
 using namespace std;
 
 using Blk = DefParser::Block;
@@ -201,4 +196,3 @@ class Graph {
         vector<Node*> V;
         vector<Edge*> E;
 };
-#endif

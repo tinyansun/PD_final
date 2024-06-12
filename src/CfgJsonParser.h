@@ -4,8 +4,6 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
-#ifndef CFG
-#define CFG
 using namespace std;
 
 class CfgJsonParser {
@@ -54,4 +52,3 @@ public:
         return blocks;
     }
 };
-#endif

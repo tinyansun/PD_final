@@ -4,9 +4,9 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
-#ifndef CONNECTION
-#define CONNECTION
 using namespace std;
+
+class Grid;
 
 class ConnectionJsonParser {
 public:
@@ -75,4 +75,3 @@ public:
         return maxTrack;
     }
 };
-#endif
