@@ -1,3 +1,4 @@
 .vscode/
 src/*.o
 .nfs*
+bin/CGR
