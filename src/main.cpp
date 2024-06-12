@@ -57,7 +57,6 @@ int main(int argc, char* argv[]) {
         router.printGrid();
     }
 
-    return 0;
     // Now, the router object contains all the necessary data for further processing.
 
 
@@ -95,7 +94,7 @@ int main(int argc, char* argv[]) {
         vector<pair<DefParser::Block*, DefParser::Block*>> MST_out = cur_graph.MST();
         
         cout << "start Astar" << endl;
-        
+
         // Find coordinates of each pair
         for (int j = 0; j < MST_out.size(); j++){
 
@@ -184,5 +183,6 @@ int main(int argc, char* argv[]) {
         */
     }
 
+    return 0;
 }
 
