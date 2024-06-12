@@ -93,6 +93,7 @@ int main(int argc, char* argv[]) {
         
         // Find coordinates of each pair
         for (int j = 0; j < MST_out.size(); j++){
+
             // Block*
             Block* cur_blk_1 = MST_out[j].first;
             Block* cur_blk_2 = MST_out[j].second;
@@ -102,11 +103,20 @@ int main(int argc, char* argv[]) {
 
             // start blk: blk_1, end_blk: blk_2
             if (MST_out[j].first == &blocks[net[i].tx]){
+                // tx
                 cur_blk_1_x = (MST_out[j].first)->position.first + net[i].txCoord.first;
                 cur_blk_1_y = (MST_out[j].first)->position.second + net[i].txCoord.second;
-                cur_blk_2_x = (MST_out[j].second)->position.first + net[i].rxCoord.first;
-                cur_blk_2_y = (MST_out[j].second)->position.second + net[i].rxCoord.second;
 
+                // multiple rx
+                int index;
+
+                for (int k = 0; k < net[i].rx.size(); k++){
+                    if (MST_out[j].second->name == net[i].rx[k]) index = k;
+                }
+
+                cur_blk_2_x = (MST_out[j].second)->position.first + net[i].rxCoord[index].first;
+                cur_blk_2_y = (MST_out[j].second)->position.second + net[i].rxCoord[index].second;
+                
                 // change to grid coord
                 double grid_1_x, grid_1_y;
                 double grid_2_x, grid_2_y;
@@ -120,11 +130,18 @@ int main(int argc, char* argv[]) {
                 Astar_out[j] = astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y);
             }
             // start blk: blk_2, end_blk: blk_1
-            else if (MST_out[j].first == &blocks[net[i].rx]){
+            else if (MST_out[j].second == &blocks[net[i].tx]){
                 cur_blk_2_x = (MST_out[j].second)->position.first + net[i].txCoord.first;
                 cur_blk_2_y = (MST_out[j].second)->position.second + net[i].txCoord.second;
-                cur_blk_1_x = (MST_out[j].first)->position.first + net[i].rxCoord.first;
-                cur_blk_1_y = (MST_out[j].first)->position.second + net[i].rxCoord.second;
+
+                // multiple rx
+                int index;
+
+                for (int k = 0; k < net[i].rx.size(); k++){
+                    if (MST_out[j].second->name == net[i].rx[k]) index = k;
+                }
+                cur_blk_1_x = (MST_out[j].first)->position.first + net[i].rxCoord[index].first;
+                cur_blk_1_y = (MST_out[j].first)->position.second + net[i].rxCoord[index].second;
 
                 // change to grid coord
                 double grid_1_x, grid_1_y;
@@ -142,8 +159,32 @@ int main(int argc, char* argv[]) {
                 cout << "Impossible! there's no middle blks!" << endl;
             }
         }
-        // store the result back to net-struct
+        
+        /*
+        std::vector<std::vector<int> > normal;
+        normal.resize(20);
+
+        for (size_t i = 0; i < normal.size(); ++i)
+        {
+            for (size_t j = 0; j < 20; ++j)
+                normal[i].push_back(j);
+        }*/
+        /*
+        vector<Grid> tmp;
         net[i]._Astar_out = Astar_out;
+
+        // store the result back to net-struct        
+        for (int j = 0; j < Astar_out.size(); j++){
+            vector<Grid> tmp;
+            for (int k = 0; k < Astar_out[j].size(); k++){
+                // net[i]._Astar_out[j][k] = Astar_out[j][k];
+                tmp.push_back(Astar_out[j][k]);
+                
+            }
+            //net[i]._Astar_out[j].push_back(Astar_out[j][k]);
+            net[i]._Astar_out.push_back(tmp);
+        }
+        */
     }
 
 }
