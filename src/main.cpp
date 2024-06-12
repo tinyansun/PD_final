@@ -3,6 +3,7 @@
 #include <ConnectionJsonParser.h>
 #include <Router.h>
 #include <Graph.h>
+#include <Astar_search.h>
 
 using namespace std;
 
