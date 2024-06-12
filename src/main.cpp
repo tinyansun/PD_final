@@ -87,9 +87,14 @@ int main(int argc, char* argv[]) {
             cur_graph.push_v(&blocks[blk_rx_list[j]]);
         }
 
+        // for test
+        cout << "start MST" << endl;
+
         // implement MST: get vector of pair of blks
         cur_graph.make_complete_g();
         vector<pair<DefParser::Block*, DefParser::Block*>> MST_out = cur_graph.MST();
+        
+        cout << "start Astar" << endl;
         
         // Find coordinates of each pair
         for (int j = 0; j < MST_out.size(); j++){
@@ -162,20 +167,10 @@ int main(int argc, char* argv[]) {
         
         // store the result back to net-struct   
         // TODO:
-        
-        /*
-        std::vector<std::vector<int> > normal;
-        normal.resize(20);
 
-        for (size_t i = 0; i < normal.size(); ++i)
-        {
-            for (size_t j = 0; j < 20; ++j)
-                normal[i].push_back(j);
-        }*/
-        /*
-        vector<Grid> tmp;
         net[i]._Astar_out = Astar_out;
-     
+
+        /*
         for (int j = 0; j < Astar_out.size(); j++){
             vector<Grid> tmp;
             for (int k = 0; k < Astar_out[j].size(); k++){

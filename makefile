@@ -11,7 +11,7 @@ INCLUDES = -I ./src
 SRCS = ./src/main.cpp ./src/Graph.cpp
 
 # Header files
-HEADERS = ./src/CfgJsonParser.h ./src/ConnectionJsonParser.h ./src/DefParser.h ./src/Router.h ./src/Graph.h
+HEADERS = ./src/CfgJsonParser.h ./src/Astar_search.h ./src/ConnectionJsonParser.h ./src/DefParser.h ./src/Router.h ./src/Graph.
 
 # Object files
 OBJS = $(SRCS:.cpp=.o)
