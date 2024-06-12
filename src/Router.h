@@ -106,6 +106,14 @@ class Grid{
         void add_block(DefParser::Block* b) {_blocks.push_back(b);}
         void set_wirenum(int wirenum) {_wirenum = wirenum;}
         void set_explored(bool explored) {_explored = explored;}
+
+        // reset 
+        void reset(){
+            set_G(0);
+            set_cost(0);
+            set_explored(0);
+        }
+        
         // destructor
         ~Grid(){ }
     private:

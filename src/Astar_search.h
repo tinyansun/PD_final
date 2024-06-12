@@ -220,6 +220,13 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
     }
     Grid_list.clear();
 
+    // reset grid_graph
+    for (int i = 0; i < router.grid_index(router.getBoundingbox()).first; i++){
+        for(int j = 0; j < router.grid_index(router.getBoundingbox()).second; j++){
+            router.grid_graph[i][j].reset();
+        }
+    }
+
     return path_grid_list;
 }
 
