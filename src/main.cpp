@@ -167,20 +167,14 @@ int main(int argc, char* argv[]) {
         // store the result back to net-struct   
         // TODO:
 
-        net[i]._Astar_out = Astar_out;
-
-        /*
-        for (int j = 0; j < Astar_out.size(); j++){
-            vector<Grid> tmp;
-            for (int k = 0; k < Astar_out[j].size(); k++){
-                // net[i]._Astar_out[j][k] = Astar_out[j][k];
-                tmp.push_back(Astar_out[j][k]);
-                
-            }
-            //net[i]._Astar_out[j].push_back(Astar_out[j][k]);
-            net[i]._Astar_out.push_back(tmp);
+        //net[i]._Astar_out = Astar_out;
+        string out_file = string("case") + defDirectory.back() + "_net.rpt";
+        ofstream outFile(out_file);
+        outFile<<net[i].id<<endl;
+        for (int j = 0; j < Astar_out.size()-1; j++){
+            outFile<<"("<<Astar_out[j].first<<","<<Astar_out[j].second->name<<"),("<<Astar_out[j+1].first<<","<<Astar_out[j+1].second<<")"<<endl;
         }
-        */
+        
     }
 
     return 0;
