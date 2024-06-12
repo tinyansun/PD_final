@@ -55,10 +55,14 @@ int main(int argc, char* argv[]) {
 
     vector<ConnectionJsonParser::NetInfo> net = router.getNets();
     unordered_map<string, DefParser::Block> blocks = router.getBlocks();
+    
 
     for(int i = 0; i < net.size(); i++){
         // new graph
         Graph cur_graph;
+
+        // record path for each net, i: which block pair, j: grids on path
+        vector<vector<Grid>> Astar_out;
 
         // push_v all blks of this net
         cur_graph.push_v(&blocks[net[i].tx]);
@@ -70,7 +74,7 @@ int main(int argc, char* argv[]) {
 
         // implement MST: get vector of pair of blks
         cur_graph.make_complete_g();
-        vector<Block*> MST_out = cur_graph.MST();
+        vector<DefParser::Block*> MST_out = cur_graph.MST();
         
         // Find coordinates of each pair
         for (int j = 0; j < MST_out.size(); j++){
@@ -98,7 +102,7 @@ int main(int argc, char* argv[]) {
                 grid_2_y = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).second;
 
                 // A*-search
-                astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y);
+                Astar_out[j] = astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y);
             }
             // start blk: blk_2, end_blk: blk_1
             else if (MST_out[j].first == &blocks[net[i].rx]){
@@ -117,12 +121,14 @@ int main(int argc, char* argv[]) {
                 grid_2_y = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).second;
 
                 // A*-search
-                astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y);
+                Astar_out[j] = astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y);
             }
             else{
                 cout << "Impossible! there's no middle blks!" << endl;
             }
         }
+        // store the result back to net-struct
+        net[i]._Astar_out = Astar_out;
     }
 
 }

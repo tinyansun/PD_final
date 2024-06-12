@@ -13,10 +13,10 @@
 using namespace std;
 
 int cal_h(int x, int y, int stop_x, int stop_y);
-void astar_search(Router router, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y);
+vector<Grid> astar_search(Router router, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y);
 
 
-void astar_search(Router router, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y){
+vector<Grid> astar_search(Router router, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y){
     vector<Grid*> Grid_list;
     // initial cur_grid
     Grid* cur_grid = new Grid(0, 0, origin_grid_x, origin_grid_y, 0);
@@ -206,14 +206,16 @@ void astar_search(Router router, int origin_grid_x, int origin_grid_y, int stop_
     cout << "final cost: " << cur_grid->get_cost() << endl;
     cout << "x: " << cur_grid->get_x() << " y: " << cur_grid->get_y() << endl;
     
-    // path
+    // record path
+    vector<Grid> path_grid_list;
     while(1){
         if ((cur_grid->get_x() == origin_grid_x) && (cur_grid->get_y() == origin_grid_y)) break;
         cout << "x: " << cur_grid->get_prev()->get_x() << " y: " << cur_grid->get_prev()->get_y() << endl;
+        path_grid_list.push_back(router.grid_graph[cur_grid->get_prev()->get_x()][cur_grid->get_prev()->get_y()]);
         cur_grid = cur_grid->get_prev();
     }
 
-    return;
+    return path_grid_list;
 }
 
 int cal_h(int x, int y, int stop_x, int stop_y){
