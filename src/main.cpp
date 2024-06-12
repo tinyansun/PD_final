@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
 
         // implement MST: get vector of pair of blks
         cur_graph.make_complete_g();
-        vector<DefParser::Block*> MST_out = cur_graph.MST();
+        vector<pair<DefParser::Block*, DefParser::Block*>> MST_out = cur_graph.MST();
         
         // Find coordinates of each pair
         for (int j = 0; j < MST_out.size(); j++){
