@@ -70,6 +70,7 @@ int main(int argc, char* argv[]) {
     vector<ConnectionJsonParser::NetInfo> net = router.getNets();
     unordered_map<string, DefParser::Block> blocks = router.getBlocks();
     
+    // TODO: net-ordering
 
     for(int i = 0; i < net.size(); i++){
         // new graph
@@ -122,16 +123,46 @@ int main(int argc, char* argv[]) {
                 cur_blk_2_y = (MST_out[j].second)->position.second + net[i].rxCoord[index].second;
                 
                 // change to grid coord
-                double grid_1_x, grid_1_y;
-                double grid_2_x, grid_2_y;
+                int grid_1_x, grid_1_y;
+                int grid_2_x, grid_2_y;
 
                 grid_1_x = router.grid_index(make_pair(cur_blk_1_x, cur_blk_1_y)).first;
                 grid_1_y = router.grid_index(make_pair(cur_blk_1_x, cur_blk_1_y)).second;
                 grid_2_x = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).first;
                 grid_2_y = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).second;
 
-                // A*-search
-                Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
+                // L-shape
+                bool left_able = true;
+                bool right_able = true;
+                bool up_able = true;
+                bool down_able = true;
+
+                int min_x = min(grid_1_x, grid_2_x);
+                int max_x = max(grid_1_x, grid_2_x);
+                int min_y = min(grid_1_y, grid_2_y);
+                int max_y = max(grid_1_y, grid_2_y);
+
+                for (int k = min_x; k <= max_x; k++){
+                    if (router.grid_graph[k][min_y].get_throughable() == 0) down_able = false;
+                    if (router.grid_graph[k][max_y].get_throughable() == 0) up_able = false;
+                }
+                for (int k = min_y; k <= max_y; k++){
+                    if (router.grid_graph[min_x][k].get_throughable() == 0) left_able = false;
+                    if (router.grid_graph[max_x][k].get_throughable() == 0) right_able = false;
+                }
+
+                // if cant L-shape, then A-star
+                if ((down_able == 1) && (right_able == 1)){
+                    vector<pair<int, int>> points;
+                    
+                }
+                else if ((left_able == 1) && (up_able == 1)){
+
+                }
+                else{
+                    // A*-search
+                    Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
+                }
             }
             // start blk: blk_2, end_blk: blk_1
             else if (MST_out[j].second == &blocks[net[i].tx]){
@@ -156,8 +187,37 @@ int main(int argc, char* argv[]) {
                 grid_2_x = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).first;
                 grid_2_y = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).second;
 
-                // A*-search
-                Astar_out.push_back(astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y));
+                // L-shape
+                bool left_able = true;
+                bool right_able = true;
+                bool up_able = true;
+                bool down_able = true;
+
+                int min_x = min(grid_1_x, grid_2_x);
+                int max_x = max(grid_1_x, grid_2_x);
+                int min_y = min(grid_1_y, grid_2_y);
+                int max_y = max(grid_1_y, grid_2_y);
+
+                for (int k = min_x; k <= max_x; k++){
+                    if (router.grid_graph[k][min_y].get_throughable() == 0) down_able = false;
+                    if (router.grid_graph[k][max_y].get_throughable() == 0) up_able = false;
+                }
+                for (int k = min_y; k <= max_y; k++){
+                    if (router.grid_graph[min_x][k].get_throughable() == 0) left_able = false;
+                    if (router.grid_graph[max_x][k].get_throughable() == 0) right_able = false;
+                }
+
+                // if cant L-shape, then A-star
+                if ((down_able == 1) && (right_able == 1)){
+
+                }
+                else if ((left_able == 1) && (up_able == 1)){
+
+                }
+                else{
+                    // A*-search
+                    Astar_out.push_back(astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y));
+                }
             }
             else{
                 cout << "Impossible! there's no middle blks!" << endl;
