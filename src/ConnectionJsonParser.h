@@ -2,11 +2,11 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <nlohmann/json.hpp>
+#include <json.hpp>
 
-#ifndef CONNECTION
-#define CONNECTION
 using namespace std;
+
+class Grid;
 
 class ConnectionJsonParser {
 public:
@@ -17,6 +17,9 @@ public:
         int numTracks;
         pair<double, double> txCoord;
         vector<pair<double, double>> rxCoord;
+        // sun
+        // result
+        vector<vector<pair<int, int>>> _Astar_out;
 
         NetInfo(int id, const string& tx, const vector<string>& rx, int num,
                 pair<double, double> txc, const vector<pair<double, double>>& rxc)
@@ -73,4 +76,3 @@ public:
         return maxTrack;
     }
 };
-#endif

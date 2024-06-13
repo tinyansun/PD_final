@@ -9,12 +9,7 @@
 #include <set>
 #include <unordered_set>
 #include <unordered_map>
-#include "DefParser.h"
-#include "ConnectionJsonParser.h"
-#include "CfgJsonParser.h"
 
-#ifndef GRAPH
-#define GRAPH
 using namespace std;
 
 using Blk = DefParser::Block;
@@ -73,8 +68,17 @@ class Node {
     public:
         Node(Blk* blk) {
             // _prev_node = 0;
-            Node(blk->position.first, blk->position.second);
             _blk = blk;
+            _x = blk->position.first;
+            _y = blk->position.second;
+
+            _ptDS = this;
+            _rank = 1;
+
+            _prev_e = nullptr;
+            _val_dij = -1; // -1 = inf
+            _is_add_dij = false;
+            _heap_id = -1;
         }
 
         Node(float x, float y) {
@@ -207,4 +211,3 @@ class Graph {
         unordered_map<Blk*, Node*> b2v;
         vector<Edge*> E;
 };
-#endif

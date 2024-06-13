@@ -8,88 +8,25 @@
 #include <algorithm>
 #include <map>
 #include <string>
-#include <queue>
 
 using namespace std;
 
-class Grid{
-    public:
-        // constuctor
-        Grid() { }
-        Grid(int G, int cost, int x, int y) :
-            _G(G), _cost(cost), _x(x), _y(y), _prevgrid(nullptr) { }
-        // get
-        int get_G() {return _G;}
-        int get_cost() {return _cost;}
-        int get_x() {return _x;}
-        int get_y() {return _y;}
-        Grid* get_prev() { return _prevgrid;}
-        // set
-        void set_G(int G) {_G = G;}
-        void set_cost(int cost) {_cost = cost;}
-        void set_x(int x) {_x = x;}
-        void set_y(int y) {_y = y;}
-        void set_prev(Grid* prev) {_prevgrid = prev;}
-        // destructor
-        ~Grid(){ }
-    private:
-        int _G;
-        int _cost;
-        int _x;
-        int _y;
-        Grid* _prevgrid;
-};
-
-
 int cal_h(int x, int y, int stop_x, int stop_y);
-void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y);
+vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y);
 
-int main(){
-    // step 1: net ordering
-    // TODO
-    
-    // step 2: routing
-    vector<int> net;
-    for (int i = 0; i < net.size(); i++){
-        // net[i][j]: i -> which net, j -> which pair
-        for (int j = 0; j < net[i].size(); j++){
-            Block cur_blk_1, cur_blk_2;
-            cur_blk_1 = net[i][j].first;
-            cur_blk_2 = net[i][j].second; 
-
-            int cur_blk_x, cur_blk_y;     
-            // start blk
-            if (cur_blk_1 == Tx){
-                cur_blk_x = net[i][j].first->block_port_region_x + tx_coord_x;
-                cur_blk_y = net[i][j].first->block_port_region_y + tx_coord_y;
-            }
-            // end blk
-            else if (cur_blk_1 == Rx){
-                cur_blk_x = net[i][j].first->block_port_region_x + rx_coord_x;
-                cur_blk_y = net[i][j].first->block_port_region_y + rx_coord_y;
-            }
-            // middle blk
-            else{
-                // port random?
-            }
-
-            
-        }
-    }
-    return 0;
-}
-
-void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y){
+vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y){
     vector<Grid*> Grid_list;
     // initial cur_grid
-    Grid* cur_grid = new Grid(0, 0, origin_grid_x, origin_grid_y);
+    Grid* cur_grid = new Grid(0, 0, origin_grid_x, origin_grid_y, 0);
+    cur_grid->set_explored(1);
+
     Grid* nxt_grid = nullptr;
-    map<pair<int, int>, bool> coord_2_obstacle;
 
     /*
+    map<pair<int, int>, bool> coord_2_obstacle;
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 7; j++) {
-            coord_2_obstacle[make_pair(i, j)] = false;
+            coord_2_obstacle[make_pair(i, j)] = true;
         }
     }
     coord_2_obstacle[make_pair(4, 1)] = true;
@@ -108,8 +45,6 @@ void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int sto
     // int B_x = B->getx() + rx;
     // int B_Y = B->gety() + ry;
 
-
-
     int right_cost, left_cost, up_cost, down_cost;
     Grid* right_grid;
     Grid* left_grid;
@@ -117,32 +52,39 @@ void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int sto
     Grid* down_grid;
 
     // initial
-    // TODO: obstacle?
-    if (coord_2_obstacle[make_pair(origin_grid_x + 1, origin_grid_y)] == false){
+    if (((origin_grid_x + 1) < router.grid_index(router.getBoundingbox()).first+1) && (router.grid_graph[origin_grid_x + 1][origin_grid_y].get_throughable() == true)){
         right_cost = 1 + cal_h(origin_grid_x + 1, origin_grid_y, stop_grid_x, stop_grid_y);
-        right_grid = new Grid(1, right_cost, origin_grid_x + 1, origin_grid_y);
+        right_grid = new Grid(1, right_cost, origin_grid_x + 1, origin_grid_y, 0);
         right_grid->set_prev(cur_grid);
+        // set_explored
+        router.grid_graph[origin_grid_x + 1][origin_grid_y].set_explored(1);
         Grid_list.push_back(right_grid);
     }
 
-    if (coord_2_obstacle[make_pair(origin_grid_x - 1, origin_grid_y)] == false){
+    if (((origin_grid_x - 1) > -1) && (router.grid_graph[origin_grid_x - 1][origin_grid_y].get_throughable() == true)){
         left_cost = 1 + cal_h(origin_grid_x - 1, origin_grid_y, stop_grid_x, stop_grid_y);
-        left_grid = new Grid(1, left_cost, origin_grid_x - 1, origin_grid_y);
+        left_grid = new Grid(1, left_cost, origin_grid_x - 1, origin_grid_y, 0);
         left_grid->set_prev(cur_grid);
+        // set_explored
+        router.grid_graph[origin_grid_x - 1][origin_grid_y].set_explored(1);
         Grid_list.push_back(left_grid);
     }
 
-    if (coord_2_obstacle[make_pair(origin_grid_x, origin_grid_y + 1)] == false){
+    if (((origin_grid_y + 1) < router.grid_index(router.getBoundingbox()).second+1) && (router.grid_graph[origin_grid_x][origin_grid_y + 1].get_throughable() == true)){
         up_cost = 1 + cal_h(origin_grid_x, origin_grid_y + 1, stop_grid_x, stop_grid_y);
-        up_grid = new Grid(1, up_cost, origin_grid_x, origin_grid_y + 1);
+        up_grid = new Grid(1, up_cost, origin_grid_x, origin_grid_y + 1, 0);
         up_grid->set_prev(cur_grid);
+        // set_explored
+        router.grid_graph[origin_grid_x][origin_grid_y + 1].set_explored(1);
         Grid_list.push_back(up_grid);
     }
 
-    if (coord_2_obstacle[make_pair(origin_grid_x, origin_grid_y - 1)] == false){
+    if (((origin_grid_y - 1) > -1) && (router.grid_graph[origin_grid_x][origin_grid_y - 1].get_throughable() == true)){
         down_cost = 1 + cal_h(origin_grid_x, origin_grid_y - 1, stop_grid_x, stop_grid_y);
-        down_grid = new Grid(1, down_cost, origin_grid_x, origin_grid_y - 1);
+        down_grid = new Grid(1, down_cost, origin_grid_x, origin_grid_y - 1, 0);
         down_grid->set_prev(cur_grid);
+        // set_explored
+        router.grid_graph[origin_grid_x][origin_grid_y - 1].set_explored(1);
         Grid_list.push_back(down_grid);
     }
 
@@ -156,6 +98,9 @@ void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int sto
             nxt_grid = Grid_list[i];
         }
     }
+
+    // set_explored
+    router.grid_graph[nxt_grid->get_x()][nxt_grid->get_y()].set_explored(1);
 
     cout << nxt_grid->get_cost() << endl;
 
@@ -187,9 +132,10 @@ void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int sto
     cout << endl;
 
     // loop
+    int count = 0;
     while(!((cur_grid->get_x() == stop_grid_x) && (cur_grid->get_y() == stop_grid_y))){
     // for (int i = 0; i < 5; i++){
-        cout << "-------------iteration----------------" << endl;
+        cout << "-------------iteration "<<count++<<"----------------" << endl;
         if (cur_grid->get_prev() == nullptr) {
             cout << "No previous grid, exiting loop." << endl;
             break;
@@ -200,38 +146,44 @@ void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int sto
         int cur_x = cur_grid->get_x();
         int cur_y = cur_grid->get_y();
 
-        bool is_obstacle = false;
-        
         // avoid backtrack (dont cal when obstacle or it is prev block)
-        if ( (!((cur_x + 1 == prev_x) && (cur_y == prev_y))) && (coord_2_obstacle[make_pair(cur_x + 1, cur_y)] == false) ){
+        if ( (!((cur_x + 1 == prev_x) && (cur_y == prev_y))) && ((cur_x + 1) < router.grid_index(router.getBoundingbox()).first+1) && (router.grid_graph[cur_x + 1][cur_y].get_throughable() == true) && (router.grid_graph[cur_x + 1][cur_y].get_explored() == false)){
             right_cost = cur_grid->get_G() + 1 + cal_h(cur_x + 1, cur_y, stop_grid_x, stop_grid_y);
-            cout << "right: " << right_cost << endl;
-            right_grid = new Grid(cur_grid->get_G() + 1, right_cost, cur_x + 1, cur_y);
+            //cout << "right: " << right_cost << endl;
+            right_grid = new Grid(cur_grid->get_G() + 1, right_cost, cur_x + 1, cur_y, 0);
             right_grid->set_prev(cur_grid);
+            // set_explored
+            router.grid_graph[cur_x + 1][cur_y].set_explored(1);
             Grid_list.push_back(right_grid);
         }
 
-        if ( (!((cur_x - 1 == prev_x) && (cur_y == prev_y))) && (coord_2_obstacle[make_pair(cur_x - 1, cur_y)] == false) ){
+        if ( (!((cur_x - 1 == prev_x) && (cur_y == prev_y))) && ((cur_x - 1) > -1) && (router.grid_graph[cur_x - 1][cur_y].get_throughable() == true)  && (router.grid_graph[cur_x - 1][cur_y].get_explored() == false) ){
             left_cost = cur_grid->get_G() + 1 + cal_h(cur_x - 1, cur_y, stop_grid_x, stop_grid_y);
-            cout << "left: " << left_cost << endl;
-            left_grid = new Grid(cur_grid->get_G() + 1, left_cost, cur_x - 1, cur_y);
+            //cout << "left: " << left_cost << endl;
+            left_grid = new Grid(cur_grid->get_G() + 1, left_cost, cur_x - 1, cur_y, 0);
             left_grid->set_prev(cur_grid);
+            // set_explored
+            router.grid_graph[cur_x - 1][cur_y].set_explored(1);
             Grid_list.push_back(left_grid);
         }
         
-        if ( (!((cur_x == prev_x) && (cur_y + 1 == prev_y))) && (coord_2_obstacle[make_pair(cur_x, cur_y + 1)] == false) ){
+        if ( (!((cur_x == prev_x) && (cur_y + 1 == prev_y))) && ((cur_y + 1) < router.grid_index(router.getBoundingbox()).second+1) && (router.grid_graph[cur_x][cur_y + 1].get_throughable() == true) && (router.grid_graph[cur_x][cur_y + 1].get_explored() == false)){
             up_cost = cur_grid->get_G() + 1 + cal_h(cur_x, cur_y + 1, stop_grid_x, stop_grid_y);
-            cout << "up: " << up_cost << endl;
-            up_grid = new Grid(cur_grid->get_G() + 1, up_cost, cur_x, cur_y + 1);
+            //cout << "up: " << up_cost << endl;
+            up_grid = new Grid(cur_grid->get_G() + 1, up_cost, cur_x, cur_y + 1, 0);
             up_grid->set_prev(cur_grid);
+            // set_explored
+            router.grid_graph[cur_x][cur_y + 1].set_explored(1);
             Grid_list.push_back(up_grid);
         }
 
-        if ( (!((cur_x == prev_x) && (cur_y - 1 == prev_y))) && (coord_2_obstacle[make_pair(cur_x, cur_y - 1)] == false) ){
+        if ( (!((cur_x == prev_x) && (cur_y - 1 == prev_y))) && ((cur_y - 1) > -1) && (router.grid_graph[cur_x][cur_y - 1].get_throughable() == true) && (router.grid_graph[cur_x][cur_y - 1].get_explored() == false)){
             down_cost = cur_grid->get_G() + 1 + cal_h(cur_x, cur_y - 1, stop_grid_x, stop_grid_y);
-            cout << "down: " << down_cost << endl;
-            down_grid = new Grid(cur_grid->get_G() + 1, down_cost, cur_x, cur_y - 1);
+            //cout << "down: " << down_cost << endl;
+            down_grid = new Grid(cur_grid->get_G() + 1, down_cost, cur_x, cur_y - 1, 0);
             down_grid->set_prev(cur_grid);
+            // set_explored
+            router.grid_graph[cur_x][cur_y - 1].set_explored(1);
             Grid_list.push_back(down_grid);
         }
 
@@ -244,7 +196,9 @@ void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int sto
                 nxt_grid = Grid_list[i];
             }
         }
-
+        // set_explored
+        router.grid_graph[nxt_grid->get_x()][nxt_grid->get_y()].set_explored(1);
+       
         cout << "mincost: " << nxt_grid->get_cost() << endl;
         cout << "x: " << nxt_grid->get_x() << endl;
         cout << "y: " << nxt_grid->get_y() << endl;
@@ -252,11 +206,11 @@ void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int sto
         // update cur_grid
         cur_grid = nxt_grid;
 
-        cout << "before" << endl;
-        for (int i = 0; i < Grid_list.size(); i++){
-            cout << Grid_list[i]->get_cost() << " ";
-        }
-        cout << endl;
+        // cout << "before" << endl;
+        // for (int i = 0; i < Grid_list.size(); i++){
+        //     cout << Grid_list[i]->get_cost() << " ";
+        // }
+        // cout << endl;
 
         // pop out
         vector<Grid*>::iterator it = find(Grid_list.begin(), Grid_list.end(), nxt_grid);
@@ -264,24 +218,39 @@ void astar_search(int origin_grid_x, int origin_grid_y, int stop_grid_x, int sto
             Grid_list.erase(it);
         }
 
-        cout << "after" << endl;
-        for (int i = 0; i < Grid_list.size(); i++){
-            cout << Grid_list[i]->get_cost() << " ";
-        }
-        cout << endl;
+        // cout << "after" << endl;
+        // for (int i = 0; i < Grid_list.size(); i++){
+        //     cout << Grid_list[i]->get_cost() << " ";
+        // }
+        // cout << endl;
     }
 
     cout << "final cost: " << cur_grid->get_cost() << endl;
     cout << "x: " << cur_grid->get_x() << " y: " << cur_grid->get_y() << endl;
     
-    // path
+    // record path
+    vector<pair<int, int>> path_grid_list;
     while(1){
         if ((cur_grid->get_x() == origin_grid_x) && (cur_grid->get_y() == origin_grid_y)) break;
-        cout << "x: " << cur_grid->get_prev()->get_x() << " y: " << cur_grid->get_prev()->get_y() << endl;
+        // cout << "x: " << cur_grid->get_prev()->get_x() << " y: " << cur_grid->get_prev()->get_y() << endl;
+        path_grid_list.push_back({cur_grid->get_prev()->get_x(), cur_grid->get_prev()->get_y()});
         cur_grid = cur_grid->get_prev();
     }
+    
+    // free Grid_list
+    for (int i = 0; i < Grid_list.size(); i++){
+        delete Grid_list[i];
+    }
+    Grid_list.clear();
 
-    return;
+    // reset grid_graph
+    for (int i = 0; i < router.grid_index(router.getBoundingbox()).first; i++){
+        for(int j = 0; j < router.grid_index(router.getBoundingbox()).second; j++){
+            router.grid_graph[i][j].reset();
+        }
+    }
+
+    return path_grid_list;
 }
 
 int cal_h(int x, int y, int stop_x, int stop_y){
