@@ -1,4 +1,5 @@
 #include "Graph.h"
+#include "Router.h"
 #include <assert.h>
 
 // some useful function
@@ -59,6 +60,21 @@ bool Graph::DS_Union (Node* u, Node* v) {
         return true;
     } else {
         return false;
+    }
+}
+
+void Graph::make_global_g(Grid** placement, pair<int, int>& bounding) {
+    // bounding = max x, max y of grid id
+    Blk* upper_b;
+    vector<Blk*> left_g(bounding.second);
+    for (int i = 0; i < bounding.first; i++) {
+        for (int j = 0; j < bounding.second; j++) {
+            Grid& g = placement[i][j];
+            if (g.get_blocks().size() == 0) continue;
+            else if (g.get_blocks().size() == 1) {
+
+            }
+        }
     }
 }
 

@@ -8,6 +8,7 @@
 #include <string>
 #include <set>
 #include <unordered_set>
+#include <unordered_map>
 #include "DefParser.h"
 #include "ConnectionJsonParser.h"
 #include "CfgJsonParser.h"
@@ -72,8 +73,8 @@ class Node {
     public:
         Node(Blk* blk) {
             // _prev_node = 0;
-            _blk = blk;
             Node(blk->position.first, blk->position.second);
+            _blk = blk;
         }
 
         Node(float x, float y) {
@@ -137,8 +138,11 @@ class Graph {
     public:
         Graph() {}
         void push_v(Blk* blk) {
-            Node* v = new Node(blk);
-            push_v(v);
+            if (b2v.find(blk) != b2v.end()) {
+                Node* v = new Node(blk);
+                b2v[blk] = v;
+                push_v(v);
+            }
         }
         void push_v(Node* v) {
             V.push_back(v);
@@ -154,7 +158,8 @@ class Graph {
                     push_e(new Edge(V[i], V[j]));
                 }
             }
-        }
+        }   
+        void make_global_g(Grid** ,pair<int, int>);
         void reset() {
             reset_V();
             reset_E();
@@ -199,6 +204,7 @@ class Graph {
         void Dijk_Relax(Node*);
 
         vector<Node*> V;
+        unordered_map<Blk*, Node*> b2v;
         vector<Edge*> E;
 };
 #endif
