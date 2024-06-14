@@ -11,6 +11,7 @@
 #include <DefParser.h>
 #include <CfgJsonParser.h>
 #include <ConnectionJsonParser.h>
+#include <climits>
 using namespace std;
 
 using json = nlohmann::json;
@@ -177,19 +178,35 @@ public:
                 //calculate actual shape
                 it->second.actual_shape = calculateActualCoordinate(it->second.position, it->second.shape, it->second.orientation);
                 
+                it->second.left_bottom = make_pair(INT_MAX, INT_MAX);
+
+                //turn actual shape into grid coordinate
+               for(int i = 0; i < it->second.actual_shape.size(); i++){
+                    it->second.actual_shape[i] = grid_index(it->second.actual_shape[i]);
+                }
+
                 //set throughable
                 Polygon polygon(it->second.actual_shape);
                 int minX, maxX, minY, maxY;
                 polygon.getBounds(minX, maxX, minY, maxY);
-                for (int i = minX; i <= maxX; ++i) {
-                    for (int j = minY; j <= maxY; ++j) {
+                for (int j = minY; j <= maxY; ++j) {
+                    for (int i = minX; i <= maxX; ++i) {
                         assert(i < (grid_index(boundingbox).first+1));
                         assert(j < (grid_index(boundingbox).second+1));
                         if (polygon.isPointInside(i, j)) {
+                            it->second.left_bottom.first = min(it->second.left_bottom.first, i);
+                            it->second.left_bottom.second = min(it->second.left_bottom.second, j);
                             grid_graph[i][j].set_throughable(it->second.isFeedthroughable);
                             grid_graph[i][j].add_block(&it->second);
                         }
                     }
+                }
+                if(it->second.left_bottom.first == INT_MAX || it->second.left_bottom.second == INT_MAX){
+                    it->second.left_bottom = it->second.position;
+                }
+                else{
+                    it->second.left_bottom.first = it->second.left_bottom.first * 200000;
+                    it->second.left_bottom.second = it->second.left_bottom.second * 200000;
                 }
             }
         }
@@ -239,6 +256,10 @@ public:
         int count = 0;
         for (auto it = blocks.begin(); it != blocks.end(); ++it) {
             vector<pair<int, int>> actualPoints = calculateActualCoordinate(it->second.position, it->second.shape, it->second.orientation);
+
+            for(int i = 0; i < actualPoints.size(); i++){
+                actualPoints[i] = grid_index(actualPoints[i]);
+            }
 
             json poly;
             for (const auto& point : actualPoints) {
@@ -333,7 +354,7 @@ public:
         vector<pair<int, int>> actualPoints;
         for (const auto& relativePoint : relativePoints) {
             pair<int, int> transformedPoint = transformPoint(relativePoint, orientation, width, height);
-            pair<int, int> actualPoint = grid_index(make_pair(origin.first + transformedPoint.first, origin.second + transformedPoint.second));
+            pair<int, int> actualPoint = make_pair(origin.first + transformedPoint.first, origin.second + transformedPoint.second);
             // cerr << "Relative Coordinate: (" << origin.first + transformedPoint.first << ", " << origin.second + transformedPoint.second << ")" << endl;
             // cerr << "Actual Coordinate: (" << actualPoint.first << ", " << actualPoint.second << ")" << endl;
             actualPoints.push_back(actualPoint);

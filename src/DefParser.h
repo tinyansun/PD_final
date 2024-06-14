@@ -14,6 +14,7 @@ public:
     struct Block {
         string name;
         pair<int, int> position;
+        pair<int, int> left_bottom;
         vector<pair<int, int>> shape;
         vector<pair<int, int>> actual_shape;
 
