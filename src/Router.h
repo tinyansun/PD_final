@@ -367,15 +367,15 @@ public:
     double CalOverflowCost() {
         double cost = 0.0;
         // double cap_gcell_edge = maxTrack;
-        for (auto net : nets) {
-            double hpwl = net.CalHPWL();
+        for (int i = 0; i < nets.size(); i++){
+            double hpwl = nets[i].CalHPWL();
             // double occupied_track = net.numTracks;
-            vector<vector<pair<int, int>>> segmentList = net._Astar_out;
+            vector<vector<pair<int, int>>> segmentList = nets[i]._Astar_out;
             double segment_cost = 0.0;
-            for (int i = 0; i < segmentList.size(); i++) {
-                vector<pair<int, int>> twoPinSegment = segmentList[i];
-                for (int j = 0; j < twoPinSegment.size(); j++) {
-                    Grid grid = grid_graph[twoPinSegment[j].first][twoPinSegment[j].second];
+            for (int j = 0; j < segmentList.size(); j++) {
+                vector<pair<int, int>> twoPinSegment = segmentList[j];
+                for (int k = 0; k < twoPinSegment.size(); k++) {
+                    Grid grid = grid_graph[twoPinSegment[k].first][twoPinSegment[k].second];
                     double trackCost = grid.get_wirenum();
                     cout << "trackcost: ";
                     cout << trackCost;
