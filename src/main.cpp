@@ -175,9 +175,6 @@ int main(int argc, char* argv[]) {
                 if (!((grid_1_x == grid_2_x) && (grid_1_y == grid_2_y))){
                     vector<pair<int, int>> L_route = Z_shape(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y);
                     if (!L_route.empty()) {
-                        // for (auto coord: L_route) {
-                        //     cout << coord.first << " " << coord.second << endl;
-                        // }
                         Astar_out.push_back(L_route);
                     } else {
                         Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
