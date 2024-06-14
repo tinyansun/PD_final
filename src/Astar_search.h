@@ -25,7 +25,7 @@ int comp_sec_cost(Grid** global_g, int origin_grid_x, int origin_grid_y, int sto
         int big = max(origin_grid_y, stop_grid_y);
         for (int k = small; k <= big; k++){
             if (global_g[fix][k].get_throughable() == 0) return -1;
-            else cost += global_g[fix][k].get_cost();
+            else cost += global_g[fix][k].get_wirenum();
         }
     } else if (origin_grid_y == stop_grid_y){
         int fix = origin_grid_y;
@@ -33,7 +33,7 @@ int comp_sec_cost(Grid** global_g, int origin_grid_x, int origin_grid_y, int sto
         int big = max(origin_grid_x, stop_grid_x);
         for (int k = small; k <= big; k++){
             if (global_g[k][fix].get_throughable() == 0) return -1;
-            else cost += global_g[k][fix].get_cost();
+            else cost += global_g[k][fix].get_wirenum();
         }
     }
     return cost;
@@ -239,50 +239,62 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
 
 vector<pair<int, int>> Z_shape(Router& router, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y) {
     Grid** global_g = router.grid_graph;
+    vector<vector<pair<int, int>>> result;
+    vector<pair<int, int>> best_path;
     int x_span = abs(origin_grid_x - stop_grid_x);
     int y_span = abs(origin_grid_y - stop_grid_y);
     int x_min = min(origin_grid_x, stop_grid_x);
     int y_min = min(origin_grid_y, stop_grid_y);
 
-    vector<vector<pair<int, int>>> result;
     int cost;
     int min_cost = -1;
     int best_id = -1;
     const int trial = 2;
 
-    result.push_back({{origin_grid_x, origin_grid_y}, {stop_grid_x, origin_grid_y}, {stop_grid_x, stop_grid_y}});
-    cost = comp_cost(global_g, result.back());
-    if (min_cost == -1 || (min_cost > cost && cost > 0) ) {
-        min_cost = cost;
-        best_id = result.size() - 1;
-    }
-    // |-
-    result.push_back({{origin_grid_x, origin_grid_y}, {origin_grid_x, stop_grid_y}, {stop_grid_x, stop_grid_y}});
-    cost = comp_cost(global_g, result.back());
-    if (min_cost == -1 || (min_cost > cost && cost > 0)) {
-        min_cost = cost;
-        best_id = result.size() - 1;
-    }
-    // Z
-    for (int i = 1; i < trial + 1; i++) {
-        int trial_x = x_min + rand() % x_span;
-        result.push_back({{origin_grid_x, origin_grid_y}, {trial_x, origin_grid_y}, {trial_x, stop_grid_y}, {stop_grid_x, stop_grid_y}});
+    if (x_span == 0 || y_span == 0) {
+        result.push_back({{origin_grid_x, origin_grid_y}, {stop_grid_x, stop_grid_y}});
+        cost = comp_cost(global_g, result.back());
+        if (min_cost == -1 || (min_cost > cost && cost > 0) ) {
+            min_cost = cost;
+            best_id = result.size() - 1;
+        }
+    } else {
+        result.push_back({{origin_grid_x, origin_grid_y}, {stop_grid_x, origin_grid_y}, {stop_grid_x, stop_grid_y}});
+        cost = comp_cost(global_g, result.back());
+        if (min_cost == -1 || (min_cost > cost && cost > 0) ) {
+            min_cost = cost;
+            best_id = result.size() - 1;
+        }
+        // |-
+        result.push_back({{origin_grid_x, origin_grid_y}, {origin_grid_x, stop_grid_y}, {stop_grid_x, stop_grid_y}});
         cost = comp_cost(global_g, result.back());
         if (min_cost == -1 || (min_cost > cost && cost > 0)) {
             min_cost = cost;
             best_id = result.size() - 1;
         }
-        int trial_y = y_min + rand() % y_span;
-        result.push_back({{origin_grid_x, origin_grid_y}, {origin_grid_x, trial_y}, {stop_grid_x, trial_y}, {stop_grid_x, stop_grid_y}});
-        cost = comp_cost(global_g, result.back());
-        if (min_cost == -1 || (min_cost > cost && cost > 0)) {
-            min_cost = cost;
-            best_id = result.size() - 1;
+        // Z
+        for (int i = 1; i < trial + 1; i++) {
+            int trial_x = x_min + rand() % x_span;
+            result.push_back({{origin_grid_x, origin_grid_y}, {trial_x, origin_grid_y}, {trial_x, stop_grid_y}, {stop_grid_x, stop_grid_y}});
+            cost = comp_cost(global_g, result.back());
+            if (min_cost == -1 || (min_cost > cost && cost > 0)) {
+                min_cost = cost;
+                best_id = result.size() - 1;
+            }
+            int trial_y = y_min + rand() % y_span;
+            result.push_back({{origin_grid_x, origin_grid_y}, {origin_grid_x, trial_y}, {stop_grid_x, trial_y}, {stop_grid_x, stop_grid_y}});
+            cost = comp_cost(global_g, result.back());
+            if (min_cost == -1 || (min_cost > cost && cost > 0)) {
+                min_cost = cost;
+                best_id = result.size() - 1;
+            }
         }
     }
 
     if (best_id == -1) return vector<pair<int, int>> ();
-    vector<pair<int, int>> best_path = result[best_id];
+
+
+
     vector<pair<int, int>> output;
     for (int i = 1; i < best_path.size(); i++) {
         int x1 = best_path[i - 1].first;
