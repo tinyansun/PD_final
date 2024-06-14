@@ -136,44 +136,15 @@ int main(int argc, char* argv[]) {
                 grid_2_x = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).first;
                 grid_2_y = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).second;
 
-                /*
-                // L-shape
-                bool left_able = true;
-                bool right_able = true;
-                bool up_able = true;
-                bool down_able = true;
-
-                int min_x = min(grid_1_x, grid_2_x);
-                int max_x = max(grid_1_x, grid_2_x);
-                int min_y = min(grid_1_y, grid_2_y);
-                int max_y = max(grid_1_y, grid_2_y);
-
-                for (int k = min_x; k <= max_x; k++){
-                    if (router.grid_graph[k][min_y].get_throughable() == 0) down_able = false;
-                    if (router.grid_graph[k][max_y].get_throughable() == 0) up_able = false;
-                }
-                for (int k = min_y; k <= max_y; k++){
-                    if (router.grid_graph[min_x][k].get_throughable() == 0) left_able = false;
-                    if (router.grid_graph[max_x][k].get_throughable() == 0) right_able = false;
-                }
-
-                // if cant L-shape, then A-star
-                if ((down_able == 1) && (right_able == 1)){
-                    vector<pair<int, int>> points;
-                    
-                }
-                else if ((left_able == 1) && (up_able == 1)){
-
-                }
-                else{
-                    // A*-search
-                    Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
-                }
-                */
 
                 // A*-search
                 if (!((grid_1_x == grid_2_x) && (grid_1_y == grid_2_y))){
-                    Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
+                    vector<pair<int, int>> L_route = Z_shape(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y);
+                    if (!L_route.empty()) {
+                        Astar_out.push_back(L_route);
+                    } else {
+                        Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
+                    }
                 }
                 else{
                     Astar_out.push_back(vector<pair<int, int>>(2, make_pair(grid_1_x, grid_1_y)));
@@ -202,43 +173,15 @@ int main(int argc, char* argv[]) {
                 grid_2_x = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).first;
                 grid_2_y = router.grid_index(make_pair(cur_blk_2_x, cur_blk_2_y)).second;
 
-                /*
-                // L-shape
-                bool left_able = true;
-                bool right_able = true;
-                bool up_able = true;
-                bool down_able = true;
-
-                int min_x = min(grid_1_x, grid_2_x);
-                int max_x = max(grid_1_x, grid_2_x);
-                int min_y = min(grid_1_y, grid_2_y);
-                int max_y = max(grid_1_y, grid_2_y);
-
-                for (int k = min_x; k <= max_x; k++){
-                    if (router.grid_graph[k][min_y].get_throughable() == 0) down_able = false;
-                    if (router.grid_graph[k][max_y].get_throughable() == 0) up_able = false;
-                }
-                for (int k = min_y; k <= max_y; k++){
-                    if (router.grid_graph[min_x][k].get_throughable() == 0) left_able = false;
-                    if (router.grid_graph[max_x][k].get_throughable() == 0) right_able = false;
-                }
-
-                // if cant L-shape, then A-star
-                if ((down_able == 1) && (right_able == 1)){
-
-                }
-                else if ((left_able == 1) && (up_able == 1)){
-
-                }
-                else{
-                    // A*-search
-                    Astar_out.push_back(astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y));
-                }
-                */
-
+                
                 // A*-search
                 if (!((grid_1_x == grid_2_x) && (grid_1_y == grid_2_y))){
-                    Astar_out.push_back(astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y));
+                    vector<pair<int, int>> L_route = Z_shape(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y);
+                    if (!L_route.empty()) {
+                        Astar_out.push_back(L_route);
+                    } else {
+                        Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
+                    }
                 }
                 else{
                     Astar_out.push_back(vector<pair<int, int>>(2, make_pair(grid_1_x, grid_1_y)));
