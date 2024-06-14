@@ -148,7 +148,7 @@ public:
            const vector<ConnectionJsonParser::NetInfo>& nts)
         : tracks_per_um(tpu), maxTrack(mT), boundingbox(box), blocks(blks), blockInfos(blkInfos), nets(nts) {
             //grid_width = ceil((double)maxTrack / (double)tracks_per_um);
-            grid_width = 200000;
+            grid_width = 20000;
 
             cerr<<grid_index(getBoundingbox()).first+1<<" "<<grid_index(getBoundingbox()).second+1<<endl;
             //init blocks
@@ -205,8 +205,8 @@ public:
                     it->second.left_bottom = it->second.position;
                 }
                 else{
-                    it->second.left_bottom.first = it->second.left_bottom.first * 200000;
-                    it->second.left_bottom.second = it->second.left_bottom.second * 200000;
+                    it->second.left_bottom.first = it->second.left_bottom.first * grid_width;
+                    it->second.left_bottom.second = it->second.left_bottom.second * grid_width;
                 }
             }
         }

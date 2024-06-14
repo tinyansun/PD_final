@@ -173,7 +173,12 @@ int main(int argc, char* argv[]) {
 
                 // A*-search
                 if (!((grid_1_x == grid_2_x) && (grid_1_y == grid_2_y))){
-                    Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
+                    vector<pair<int, int>> L_route = Z_shape(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y);
+                    if (!L_route.empty()) {
+                        Astar_out.push_back(L_route);
+                    } else {
+                        Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
+                    }
                 }
                 else{
                     Astar_out.push_back(vector<pair<int, int>>(2, make_pair(grid_1_x, grid_1_y)));
@@ -238,7 +243,15 @@ int main(int argc, char* argv[]) {
 
                 // A*-search
                 if (!((grid_1_x == grid_2_x) && (grid_1_y == grid_2_y))){
-                    Astar_out.push_back(astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y));
+                    vector<pair<int, int>> L_route = Z_shape(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y);
+                    if (!L_route.empty()) {
+                        // for (auto coord: L_route) {
+                        //     cout << coord.first << " " << coord.second << endl;
+                        // }
+                        Astar_out.push_back(L_route);
+                    } else {
+                        Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
+                    }
                 }
                 else{
                     Astar_out.push_back(vector<pair<int, int>>(2, make_pair(grid_1_x, grid_1_y)));
@@ -253,24 +266,24 @@ int main(int argc, char* argv[]) {
         //net[i]._Astar_out = Astar_out;
         outFile<<net[i].id<<endl;
         for (int j = 0; j < Astar_out.size(); j++){
+            if(Astar_out[j].size() == 0) continue;
             for (int k = 0; k < Astar_out[j].size()-1; k++){
                 outFile<<"("<<Astar_out[j][k].first<<","<<Astar_out[j][k].second<<"),("<<Astar_out[j][k+1].first<<","<<Astar_out[j][k+1].second<<")"<<endl;
             }
         }
         
         net[i]._Astar_out = Astar_out;
-
+        //cerr << "net "<<i<<" finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
     }
+    cerr << "routing finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
 
-    /*
     // print wirenum
-    for (int i = 0; i < router.grid_index(router.getBoundingbox()).first+1; i++){
-        for(int j = 0; j < router.grid_index(router.getBoundingbox()).second+1; j++){
-            cout << router.grid_graph[i][j].get_wirenum() << " ";
-        }
-    }
-    */
-
+    // for (int i = 0; i < router.grid_index(router.getBoundingbox()).first+1; i++){
+    //     for(int j = 0; j < router.grid_index(router.getBoundingbox()).second+1; j++){
+    //         cout << router.grid_graph[i][j].get_wirenum() << " ";
+    //     }
+    // }
+   
     // evaluator for overflow
     double overflow_cost = 0.0;
     // double cap_gcell_edge = maxTrack;
@@ -291,7 +304,9 @@ int main(int argc, char* argv[]) {
         overflow_cost += (segment_cost / hpwl);
     }
     cout << "overflow_cost: " << overflow_cost << endl;
+    cerr << "evaluator finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
 
+    
     return 0;
 }
 
