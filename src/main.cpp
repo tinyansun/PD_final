@@ -264,17 +264,26 @@ int main(int argc, char* argv[]) {
 
     }
 
-    /*
-    for (int i = 0; i < router.grid_index(router.getBoundingbox()).first+1; i++){
-        for(int j = 0; j < router.grid_index(router.getBoundingbox()).second+1; j++){
-            cout << router.grid_graph[i][j].get_wirenum() << " ";
-        }
-    }
-    */
 
-    // evaluator
-    double overflow_cost;
-    overflow_cost = router.CalOverflowCost();
+    // evaluator for overflow
+    double overflow_cost = 0.0;
+    // double cap_gcell_edge = maxTrack;
+    for (int i = 0; i < net.size(); i++){
+        double hpwl = net[i].CalHPWL();
+        // double occupied_track = net.numTracks;
+        vector<vector<pair<int, int>>> segmentList = net[i]._Astar_out;
+        double segment_cost = 0.0;
+        for (int j = 0; j < segmentList.size(); j++) {
+            vector<pair<int, int>> twoPinSegment = segmentList[j];
+            for (int k = 0; k < twoPinSegment.size(); k++) {
+                Grid grid = router.grid_graph[twoPinSegment[k].first][twoPinSegment[k].second];
+                double trackCost = grid.get_wirenum();
+                // cout << "trackcost: " << trackCost << endl;
+                segment_cost += trackCost;
+            }
+        }
+        overflow_cost += (segment_cost / hpwl);
+    }
     cout << "overflow_cost: " << overflow_cost << endl;
 
     return 0;
