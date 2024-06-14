@@ -366,10 +366,10 @@ public:
     // overflow evaluate
     double CalOverflowCost() {
         double cost = 0.0;
-        double cap_gcell_edge = maxTrack;
+        // double cap_gcell_edge = maxTrack;
         for (auto net : nets) {
             double hpwl = net.CalHPWL();
-            double occupied_track = net.numTracks;
+            // double occupied_track = net.numTracks;
             vector<vector<pair<int, int>>> segmentList = net._Astar_out;
             double segment_cost = 0.0;
             for (int i = 0; i < segmentList.size(); i++) {
