@@ -22,6 +22,9 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
 
     Grid* nxt_grid = nullptr;
 
+    // record path for output
+    vector<pair<int, int>> path_grid_list;
+
     /*
     map<pair<int, int>, bool> coord_2_obstacle;
     for (int i = 0; i < 8; i++) {
@@ -99,6 +102,11 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         }
     }
 
+    // test segmentation
+    if (nxt_grid == nullptr){
+        cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ there's no way out! @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;
+        return path_grid_list;
+    }
 
     cout << nxt_grid->get_cost() << endl;
 
@@ -230,8 +238,6 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
     cout << "final cost: " << cur_grid->get_cost() << endl;
     cout << "x: " << cur_grid->get_x() << " y: " << cur_grid->get_y() << endl;
     
-    // record path
-    vector<pair<int, int>> path_grid_list;
     while(1){
         if ((cur_grid->get_x() == origin_grid_x) && (cur_grid->get_y() == origin_grid_y)) break;
         // cout << "x: " << cur_grid->get_prev()->get_x() << " y: " << cur_grid->get_prev()->get_y() << endl;
