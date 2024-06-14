@@ -377,6 +377,9 @@ public:
                 for (int j = 0; j < twoPinSegment.size(); j++) {
                     Grid grid = grid_graph[twoPinSegment[j].first][twoPinSegment[j].second];
                     double trackCost = grid.get_wirenum();
+                    cout << "trackcost: ";
+                    cout << trackCost;
+                    cout << endl;
                     segment_cost += trackCost;
                 }
             }
