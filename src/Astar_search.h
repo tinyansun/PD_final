@@ -13,6 +13,40 @@ using namespace std;
 
 int cal_h(int x, int y, int stop_x, int stop_y);
 vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y);
+vector<pair<int, int>> Z_shape(Router& router, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y);
+bool check_overlap(int x01, int x02, int x11, int x12) {
+    return (x01 < x11 && x11 < x02) || (x01 < x12 && x12 < x02);
+}
+int comp_sec_cost(Grid** global_g, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y) {
+    int cost = 0;
+    if (origin_grid_x == stop_grid_x) {
+        int fix = origin_grid_x;
+        int small = min(origin_grid_y, stop_grid_y);
+        int big = max(origin_grid_y, stop_grid_y);
+        for (int k = small; k <= big; k++){
+            if (global_g[fix][k].get_throughable() == 0) return -1;
+            else cost += global_g[fix][k].get_cost();
+        }
+    } else if (origin_grid_y == stop_grid_y){
+        int fix = origin_grid_y;
+        int small = min(origin_grid_x, stop_grid_x);
+        int big = max(origin_grid_x, stop_grid_x);
+        for (int k = small; k <= big; k++){
+            if (global_g[k][fix].get_throughable() == 0) return -1;
+            else cost += global_g[k][fix].get_cost();
+        }
+    }
+    return cost;
+}
+int comp_cost(Grid** global_g, vector<pair<int, int>>& pt) {
+    int cost = 0;
+    for (int i = 1; i < pt.size(); i++) {
+        int c_sec = comp_sec_cost(global_g, pt[i - 1].first, pt[i - 1].second, pt[i].first, pt[i].second);
+        if (c_sec < 0) return -1;
+        else cost += c_sec;
+    } 
+    return cost;
+}
 
 vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y){
     // test
@@ -202,6 +236,82 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
 
     return path_grid_list;
 }
+
+vector<pair<int, int>> Z_shape(Router& router, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y) {
+    Grid** global_g = router.grid_graph;
+    int x_span = abs(origin_grid_x - stop_grid_x);
+    int y_span = abs(origin_grid_y - stop_grid_y);
+    int x_min = min(origin_grid_x, stop_grid_x);
+    int y_min = min(origin_grid_y, stop_grid_y);
+
+    vector<vector<pair<int, int>>> result;
+    int cost;
+    int min_cost = -1;
+    int best_id = -1;
+    const int trial = 2;
+
+    result.push_back({{origin_grid_x, origin_grid_y}, {stop_grid_x, origin_grid_y}, {stop_grid_x, stop_grid_y}});
+    cost = comp_cost(global_g, result.back());
+    if (min_cost == -1 || (min_cost > cost && cost > 0) ) {
+        min_cost = cost;
+        best_id = result.size() - 1;
+    }
+    // |-
+    result.push_back({{origin_grid_x, origin_grid_y}, {origin_grid_x, stop_grid_y}, {stop_grid_x, stop_grid_y}});
+    cost = comp_cost(global_g, result.back());
+    if (min_cost == -1 || (min_cost > cost && cost > 0)) {
+        min_cost = cost;
+        best_id = result.size() - 1;
+    }
+    // Z
+    for (int i = 1; i < trial + 1; i++) {
+        int trial_x = x_min + rand() % x_span;
+        result.push_back({{origin_grid_x, origin_grid_y}, {trial_x, origin_grid_y}, {trial_x, stop_grid_y}, {stop_grid_x, stop_grid_y}});
+        cost = comp_cost(global_g, result.back());
+        if (min_cost == -1 || (min_cost > cost && cost > 0)) {
+            min_cost = cost;
+            best_id = result.size() - 1;
+        }
+        int trial_y = y_min + rand() % y_span;
+        result.push_back({{origin_grid_x, origin_grid_y}, {origin_grid_x, trial_y}, {stop_grid_x, trial_y}, {stop_grid_x, stop_grid_y}});
+        cost = comp_cost(global_g, result.back());
+        if (min_cost == -1 || (min_cost > cost && cost > 0)) {
+            min_cost = cost;
+            best_id = result.size() - 1;
+        }
+    }
+
+    if (best_id == -1) return vector<pair<int, int>> ();
+    vector<pair<int, int>> best_path = result[best_id];
+    vector<pair<int, int>> output;
+    for (int i = 1; i < best_path.size(); i++) {
+        int x1 = best_path[i - 1].first;
+        int x2 = best_path[i - 1].second;
+        int y1 = best_path[i].first;
+        int y2 = best_path[i].second;
+        if (x1 == x2) {
+            int fix = x1;
+            int cur = y1;
+            int end = y2;
+            while (cur != end) {
+                output.push_back({fix, cur});
+                global_g[fix][cur].inc_wirenum();
+                cur = cur < end ? cur + 1 : cur - 1;
+            }
+        } else if (y1 == y2){
+            int fix = y1;
+            int cur = x1;
+            int end = x2;
+            while (cur != end) {
+                output.push_back({fix, cur});
+                global_g[fix][cur].inc_wirenum();
+                cur = cur < end ? cur + 1 : cur - 1;
+            }
+        }
+    }
+    return output;
+}
+
 
 int cal_h(int x, int y, int stop_x, int stop_y){
     int x_out = abs(stop_x - x);
