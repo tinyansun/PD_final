@@ -306,6 +306,7 @@ public:
         }
         outFile.close();
     }
+
     //==================other parse function==================
     pair<int, int> transformPoint(const pair<int, int>& point, const string& orientation, int width, int height) {
         if (orientation == "N") {
@@ -359,11 +360,31 @@ public:
             // cerr << "Actual Coordinate: (" << actualPoint.first << ", " << actualPoint.second << ")" << endl;
             actualPoints.push_back(actualPoint);
         }
-        
         return actualPoints;
+    }
+
+    // overflow evaluate
+    double CalOverflowCost() {
+        double cost = 0.0;
+        double cap_gcell_edge = maxTrack;
+        for (auto net : nets) {
+            double hpwl = net.CalHPWL();
+            double occupied_track = net.numTracks;
+            vector<vector<Grid>> segmentList = net.routingSegment;
+            double segemnt_cost = 0.0;
+            for (int i=0; i<segmentList.size(); i++) {
+                vector<Grid> twoPinSegment = segmentList[i];
+                for (int j=0; j<twoPinSegment.size(); j++) {
+                    Grid grid = twoPinSegment[j];
+                    double trackCost = grid.get_cost();
+                    segemnt_cost += trackCost;
+                }
+            }
+            cost += (segemnt_cost / hpwl);
         }
 
-    //data member
+        return cost;
+    }
 };
 
 
