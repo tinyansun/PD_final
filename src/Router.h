@@ -176,11 +176,7 @@ public:
             for (auto it = blocks.begin(); it != blocks.end(); ++it) {
                 //calculate actual shape
                 it->second.actual_shape = calculateActualCoordinate(it->second.position, it->second.shape, it->second.orientation);
-                //skip region and feedthroughable block
-                if(it->second.isFeedthroughable || it->second.region){
-                    continue;
-                }
-
+                
                 //set throughable
                 Polygon polygon(it->second.actual_shape);
                 int minX, maxX, minY, maxY;
@@ -190,7 +186,7 @@ public:
                         assert(i < (grid_index(boundingbox).first+1));
                         assert(j < (grid_index(boundingbox).second+1));
                         if (polygon.isPointInside(i, j)) {
-                            grid_graph[i][j].set_throughable(false);
+                            grid_graph[i][j].set_throughable(it->second.isFeedthroughable);
                             grid_graph[i][j].add_block(&it->second);
                         }
                     }
@@ -278,10 +274,10 @@ public:
         }
 
         ofstream outFile("grid.csv");
-        for (int i = 0; i < grid_index(getBoundingbox()).first; ++i) {
-            for (int j = 0; j < grid_index(getBoundingbox()).second; ++j) {
+        for (int i = 0; i < grid_index(getBoundingbox()).first+1; ++i) {
+            for (int j = 0; j < grid_index(getBoundingbox()).second+1; ++j) {
                 outFile << grid_graph[i][j].color;
-                if (j < grid_index(getBoundingbox()).second - 1) {
+                if (j < grid_index(getBoundingbox()).second) {
                     outFile << ",";
                 }
             }

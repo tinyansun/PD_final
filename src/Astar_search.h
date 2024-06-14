@@ -214,7 +214,7 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
             }
         }
        
-        cout << "mincost: " << nxt_grid->get_cost() << endl;
+        // cout << "mincost: " << nxt_grid->get_cost() << endl;
         cout << "x: " << nxt_grid->get_x() << endl;
         cout << "y: " << nxt_grid->get_y() << endl;
 
@@ -246,8 +246,8 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         }
     }
 
-    cout << "final cost: " << cur_grid->get_cost() << endl;
-    cout << "x: " << cur_grid->get_x() << " y: " << cur_grid->get_y() << endl;
+    // cout << "final cost: " << cur_grid->get_cost() << endl;
+    // cout << "x: " << cur_grid->get_x() << " y: " << cur_grid->get_y() << endl;
     
     while(1){
         if ((cur_grid->get_x() == origin_grid_x) && (cur_grid->get_y() == origin_grid_y)) break;
@@ -265,8 +265,8 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
     Grid_list.clear();
 
     // reset grid_graph
-    for (int i = 0; i < router.grid_index(router.getBoundingbox()).first; i++){
-        for(int j = 0; j < router.grid_index(router.getBoundingbox()).second; j++){
+    for (int i = 0; i < router.grid_index(router.getBoundingbox()).first+1; i++){
+        for(int j = 0; j < router.grid_index(router.getBoundingbox()).second+1; j++){
             router.grid_graph[i][j].reset();
         }
     }
