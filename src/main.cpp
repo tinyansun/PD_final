@@ -55,10 +55,11 @@ int main(int argc, char* argv[]) {
     cerr << "parse finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
     if(draw){
         router.printGrid();
+        return 0;
     }
 
     //output file
-    string out_file = string("case") + defDirectory.back() + "_net.rpt";
+    string out_file = string("case") + defDirectory[defDirectory.find("_") - 1] + "_net.rpt";
     ofstream outFile(out_file);
 
     // Now, the router object contains all the necessary data for further processing.
@@ -93,7 +94,7 @@ int main(int argc, char* argv[]) {
 
         // for test
         cout << "start MST" << endl;
-
+    
         // implement MST: get vector of pair of blks
         cur_graph.make_complete_g();
         vector<pair<DefParser::Block*, DefParser::Block*>> MST_out = cur_graph.MST();
