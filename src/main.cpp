@@ -93,13 +93,13 @@ int main(int argc, char* argv[]) {
         }
 
         // for test
-        cout << "start MST" << endl;
+        //cout << "start MST" << endl;
     
         // implement MST: get vector of pair of blks
         cur_graph.make_complete_g();
         vector<pair<DefParser::Block*, DefParser::Block*>> MST_out = cur_graph.MST();
         
-        cout << "start Astar" << endl;
+        //cout << "start Astar" << endl;
 
         // Find coordinates of each pair
         for (int j = 0; j < MST_out.size(); j++){
@@ -114,8 +114,8 @@ int main(int argc, char* argv[]) {
             // start blk: blk_1, end_blk: blk_2
             if (MST_out[j].first == &blocks[net[i].tx]){
                 // tx
-                cur_blk_1_x = (MST_out[j].first)->position.first + net[i].txCoord.first;
-                cur_blk_1_y = (MST_out[j].first)->position.second + net[i].txCoord.second;
+                cur_blk_1_x = (MST_out[j].first)->left_bottom.first + net[i].txCoord.first;
+                cur_blk_1_y = (MST_out[j].first)->left_bottom.second + net[i].txCoord.second;
 
                 // multiple rx
                 int index;
@@ -124,8 +124,8 @@ int main(int argc, char* argv[]) {
                     if (MST_out[j].second->name == net[i].rx[k]) index = k;
                 }
 
-                cur_blk_2_x = (MST_out[j].second)->position.first + net[i].rxCoord[index].first;
-                cur_blk_2_y = (MST_out[j].second)->position.second + net[i].rxCoord[index].second;
+                cur_blk_2_x = (MST_out[j].second)->left_bottom.first + net[i].rxCoord[index].first;
+                cur_blk_2_y = (MST_out[j].second)->left_bottom.second + net[i].rxCoord[index].second;
                 
                 // change to grid coord
                 int grid_1_x, grid_1_y;
@@ -152,8 +152,8 @@ int main(int argc, char* argv[]) {
             }
             // start blk: blk_2, end_blk: blk_1
             else if (MST_out[j].second == &blocks[net[i].tx]){
-                cur_blk_2_x = (MST_out[j].second)->position.first + net[i].txCoord.first;
-                cur_blk_2_y = (MST_out[j].second)->position.second + net[i].txCoord.second;
+                cur_blk_2_x = (MST_out[j].second)->left_bottom.first + net[i].txCoord.first;
+                cur_blk_2_y = (MST_out[j].second)->left_bottom.second + net[i].txCoord.second;
 
                 // multiple rx
                 int index;
@@ -161,8 +161,8 @@ int main(int argc, char* argv[]) {
                 for (int k = 0; k < net[i].rx.size(); k++){
                     if (MST_out[j].second->name == net[i].rx[k]) index = k;
                 }
-                cur_blk_1_x = (MST_out[j].first)->position.first + net[i].rxCoord[index].first;
-                cur_blk_1_y = (MST_out[j].first)->position.second + net[i].rxCoord[index].second;
+                cur_blk_1_x = (MST_out[j].first)->left_bottom.first + net[i].rxCoord[index].first;
+                cur_blk_1_y = (MST_out[j].first)->left_bottom.second + net[i].rxCoord[index].second;
 
                 // change to grid coord
                 double grid_1_x, grid_1_y;
@@ -188,7 +188,7 @@ int main(int argc, char* argv[]) {
                 }
             }
             else{
-                cout << "Impossible! there's no middle blks!" << endl;
+                //cout << "Impossible! there's no middle blks!" << endl;
             }
         }
         
@@ -206,6 +206,11 @@ int main(int argc, char* argv[]) {
         net[i]._Astar_out = Astar_out;
 
     }
+
+    // evaluator
+    double overflow_cost;
+    overflow_cost = router.CalOverflowCost();
+    cout << "overflow_cost: " << overflow_cost << endl;
 
     return 0;
 }

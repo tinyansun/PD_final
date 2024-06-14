@@ -20,6 +20,24 @@ public:
         // sun
         // result
         vector<vector<pair<int, int>>> _Astar_out;
+        double CalHPWL() {
+            double min_x = -INT_MAX;
+            double max_x = INT_MAX;
+            double min_y = -INT_MAX;
+            double max_y = INT_MAX;
+            for (int i = 0; i < _Astar_out.size(); i++) {
+                vector<pair<int, int>> twoPinSegment = _Astar_out[i];
+                for (int j = 0; j < twoPinSegment.size(); j++) {
+                    double x = twoPinSegment[j].first;
+                    double y = twoPinSegment[j].second;
+                    min_x = min(min_x, x);
+                    max_x = max(max_x, x);
+                    min_y = min(min_y, y);
+                    max_y = max(max_y, y);
+                }
+            }
+            return (max_x - min_x) + (max_y - min_y);
+        }
 
         NetInfo(int id, const string& tx, const vector<string>& rx, int num,
                 pair<double, double> txc, const vector<pair<double, double>>& rxc)
