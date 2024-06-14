@@ -15,6 +15,9 @@ int cal_h(int x, int y, int stop_x, int stop_y);
 vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y);
 
 vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin_grid_y, int stop_grid_x, int stop_grid_y){
+    // test
+    cout << "start " << "x: " << origin_grid_x << " y: " << origin_grid_y << endl;
+    cout << "end " << "x: " << stop_grid_x << " y: " << stop_grid_y << endl;
     vector<Grid*> Grid_list;
     // initial cur_grid
     Grid* cur_grid = new Grid(0, 0, origin_grid_x, origin_grid_y, 0);
@@ -55,6 +58,7 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
     Grid* down_grid;
 
     // initial
+    if (router.grid_graph[origin_grid_x + 1][origin_grid_y].get_throughable() == true) cout << "a" << endl;
     if (((origin_grid_x + 1) < router.grid_index(router.getBoundingbox()).first+1) && (router.grid_graph[origin_grid_x + 1][origin_grid_y].get_throughable() == true)){
         right_cost = 1 + cal_h(origin_grid_x + 1, origin_grid_y, stop_grid_x, stop_grid_y) + router.grid_graph[origin_grid_x + 1][origin_grid_y].get_wirenum();
         right_grid = new Grid(1, right_cost, origin_grid_x + 1, origin_grid_y, 0);
@@ -62,8 +66,10 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         // set_explored
         router.grid_graph[origin_grid_x + 1][origin_grid_y].set_explored(1);
         Grid_list.push_back(right_grid);
+        // cout << "a" << endl;
     }
 
+    if (router.grid_graph[origin_grid_x - 1][origin_grid_y].get_throughable() == true) cout << "b" << endl;
     if (((origin_grid_x - 1) > -1) && (router.grid_graph[origin_grid_x - 1][origin_grid_y].get_throughable() == true)){
         left_cost = 1 + cal_h(origin_grid_x - 1, origin_grid_y, stop_grid_x, stop_grid_y) + router.grid_graph[origin_grid_x - 1][origin_grid_y].get_wirenum();
         left_grid = new Grid(1, left_cost, origin_grid_x - 1, origin_grid_y, 0);
@@ -71,8 +77,10 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         // set_explored
         router.grid_graph[origin_grid_x - 1][origin_grid_y].set_explored(1);
         Grid_list.push_back(left_grid);
+        // cout << "b" << endl;
     }
 
+    if (router.grid_graph[origin_grid_x][origin_grid_y + 1].get_throughable() == true) cout << "c" << endl;
     if (((origin_grid_y + 1) < router.grid_index(router.getBoundingbox()).second+1) && (router.grid_graph[origin_grid_x][origin_grid_y + 1].get_throughable() == true)){
         up_cost = 1 + cal_h(origin_grid_x, origin_grid_y + 1, stop_grid_x, stop_grid_y) + router.grid_graph[origin_grid_x][origin_grid_y + 1].get_wirenum();
         up_grid = new Grid(1, up_cost, origin_grid_x, origin_grid_y + 1, 0);
@@ -80,8 +88,10 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         // set_explored
         router.grid_graph[origin_grid_x][origin_grid_y + 1].set_explored(1);
         Grid_list.push_back(up_grid);
+        // cout << "c" << endl;
     }
 
+    if (router.grid_graph[origin_grid_x][origin_grid_y - 1].get_throughable() == true) cout << "d" << endl;
     if (((origin_grid_y - 1) > -1) && (router.grid_graph[origin_grid_x][origin_grid_y - 1].get_throughable() == true)){
         down_cost = 1 + cal_h(origin_grid_x, origin_grid_y - 1, stop_grid_x, stop_grid_y) + router.grid_graph[origin_grid_x][origin_grid_y - 1].get_wirenum();
         down_grid = new Grid(1, down_cost, origin_grid_x, origin_grid_y - 1, 0);
@@ -89,6 +99,7 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         // set_explored
         router.grid_graph[origin_grid_x][origin_grid_y - 1].set_explored(1);
         Grid_list.push_back(down_grid);
+        // cout << "d" << endl;
     }
 
     // Grid_list: all the grid that can possibly be chose, pop out if chosen
