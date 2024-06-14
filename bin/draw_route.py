@@ -23,16 +23,25 @@ def draw_grid_with_lines(grid, lines, output_file):
     fig, ax = plt.subplots(figsize=(10, 10), dpi=200)
     ax.imshow(image_rotated, aspect='equal')
 
-    # 设置刻度
-    num_rows, num_cols = grid.shape
-    x_ticks = np.linspace(0, num_cols - 1, num=5)
-    y_ticks = np.linspace(0, num_rows - 1, num=5)
+    # 添加格子线
+    x_ticks = np.arange(0, grid.shape[0], 10)
+    y_ticks = np.arange(0, grid.shape[1], 10)
     ax.set_xticks(x_ticks)
     ax.set_yticks(y_ticks)
+    ax.set_xticks(np.arange(-0.5, grid.shape[0], 1), minor=True)
+    ax.set_yticks(np.arange(-0.5, grid.shape[1], 1), minor=True)
+    ax.grid(which='minor', color='k', linestyle='-', linewidth=1)
+    ax.set_xticklabels([str(int(x)*200000) for x in x_ticks], fontsize=8)
+    ax.set_yticklabels([str(int(grid.shape[1] - 1 - y)*200000) for y in y_ticks], fontsize=8)
 
-    # 设置刻度标签为0到1的比例，并将x轴数值从下到上显示
-    ax.set_xticklabels([f'{x / (num_cols - 1):.2f}' for x in x_ticks])
-    ax.set_yticklabels([f'{(num_rows - 1 - y) / (num_rows - 1):.2f}' for y in y_ticks])
+    # 设置刻度
+    # num_rows, num_cols = grid.shape
+    # x_ticks = np.linspace(0, num_cols - 1, num=5)
+    # y_ticks = np.linspace(0, num_rows - 1, num=5)
+    # ax.set_xticks(x_ticks)
+    # ax.set_yticks(y_ticks)
+    # ax.set_xticklabels([f'{x / (num_cols - 1):.2f}' for x in x_ticks])
+    # ax.set_yticklabels([f'{(num_rows - 1 - y) / (num_rows - 1):.2f}' for y in y_ticks])
 
     # 隐藏坐标轴边框
     ax.spines['top'].set_visible(False)
@@ -46,8 +55,8 @@ def draw_grid_with_lines(grid, lines, output_file):
     # 绘制线段，动态调整线宽和颜色
     for line, count in lines.items():
         (x0, y0), (x1, y1) = line
-        linewidth = min(0.5 * (1+count/14), 1)  # 线宽最大为0.5
-        color = 'red' if linewidth == 1 else 'blue'  # 线宽达到最大值时为红色，否则为蓝色
+        linewidth = min(0.7 * (1+count/45), 2.7)  # 线宽最大为0.5
+        color = 'red' if linewidth >= 1.8 else 'blue'  # 线宽达到最大值时为红色，否则为蓝色
         ax.plot([x0, x1], [grid.shape[1] - y0, grid.shape[1] - y1], color=color, linewidth=linewidth)
 
     plt.savefig(output_file, bbox_inches='tight', pad_inches=0.1, dpi=200)
@@ -64,7 +73,7 @@ def parse_rpt_file(rpt_file):
                 coords = line.split('),(')
                 x0, y0 = map(int, coords[0].strip('()').split(','))
                 x1, y1 = map(int, coords[1].strip('()').split(','))
-                line = ((x0, y0), (x1, y1))
+                line = ((x0, y0+1), (x1, y1+1))
                 lines[line] += 1
     return lines
 
