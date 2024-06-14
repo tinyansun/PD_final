@@ -371,16 +371,16 @@ public:
             double hpwl = net.CalHPWL();
             double occupied_track = net.numTracks;
             vector<vector<pair<int, int>>> segmentList = net._Astar_out;
-            double segemnt_cost = 0.0;
+            double segment_cost = 0.0;
             for (int i = 0; i < segmentList.size(); i++) {
                 vector<pair<int, int>> twoPinSegment = segmentList[i];
                 for (int j = 0; j < twoPinSegment.size(); j++) {
                     Grid grid = grid_graph[twoPinSegment[j].first][twoPinSegment[j].second];
-                    double trackCost = grid.get_cost();
-                    segemnt_cost += trackCost;
+                    double trackCost = grid.get_wirenum();
+                    segment_cost += trackCost;
                 }
             }
-            cost += (segemnt_cost / hpwl);
+            cost += (segment_cost / hpwl);
         }
 
         return cost;
