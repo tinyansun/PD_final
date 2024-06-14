@@ -265,7 +265,9 @@ int main(int argc, char* argv[]) {
     }
 
     // evaluator
-    
+    double overflow_cost;
+    overflow_cost = router.CalOverflowCost();
+    cout << "overflow_cost: " << overflow_cost << endl;
 
     return 0;
 }
