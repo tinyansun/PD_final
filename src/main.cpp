@@ -264,7 +264,15 @@ int main(int argc, char* argv[]) {
 
     }
 
-
+    /*
+    // print wirenum
+    for (int i = 0; i < router.grid_index(router.getBoundingbox()).first+1; i++){
+        for(int j = 0; j < router.grid_index(router.getBoundingbox()).second+1; j++){
+            cout << router.grid_graph[i][j].get_wirenum() << " ";
+        }
+    }
+    */
+   
     // evaluator for overflow
     double overflow_cost = 0.0;
     // double cap_gcell_edge = maxTrack;
