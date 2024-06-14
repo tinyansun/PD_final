@@ -183,7 +183,7 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         if ((cur_grid->get_x() == origin_grid_x) && (cur_grid->get_y() == origin_grid_y)) break;
         path_grid_list.push_back({cur_grid->get_x(), cur_grid->get_y()});
         // record wirenum
-        cur_grid->inc_wirenum();
+        router.grid_graph[cur_grid->get_x()][cur_grid->get_y()].inc_wirenum();
         cur_grid = cur_grid->get_prev();
     }
     
