@@ -36,7 +36,7 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
 
     // initial
     if (((origin_grid_x + 1) < router.grid_index(router.getBoundingbox()).first+1) && (router.grid_graph[origin_grid_x + 1][origin_grid_y].get_throughable() == true)){
-        right_cost = 1 + cal_h(origin_grid_x + 1, origin_grid_y, stop_grid_x, stop_grid_y) + router.grid_graph[origin_grid_x + 1][origin_grid_y].get_wirenum();
+        right_cost = 1 + cal_h(origin_grid_x + 1, origin_grid_y, stop_grid_x, stop_grid_y) + 1000 * router.grid_graph[origin_grid_x + 1][origin_grid_y].get_wirenum();
         right_grid = new Grid(1, right_cost, origin_grid_x + 1, origin_grid_y, 0);
         right_grid->set_prev(cur_grid);
         // set_explored
@@ -45,7 +45,7 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
     }
 
     if (((origin_grid_x - 1) > -1) && (router.grid_graph[origin_grid_x - 1][origin_grid_y].get_throughable() == true)){
-        left_cost = 1 + cal_h(origin_grid_x - 1, origin_grid_y, stop_grid_x, stop_grid_y) + router.grid_graph[origin_grid_x - 1][origin_grid_y].get_wirenum();
+        left_cost = 1 + cal_h(origin_grid_x - 1, origin_grid_y, stop_grid_x, stop_grid_y) + 1000 * router.grid_graph[origin_grid_x - 1][origin_grid_y].get_wirenum();
         left_grid = new Grid(1, left_cost, origin_grid_x - 1, origin_grid_y, 0);
         left_grid->set_prev(cur_grid);
         // set_explored
@@ -54,7 +54,7 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
     }
 
     if (((origin_grid_y + 1) < router.grid_index(router.getBoundingbox()).second+1) && (router.grid_graph[origin_grid_x][origin_grid_y + 1].get_throughable() == true)){
-        up_cost = 1 + cal_h(origin_grid_x, origin_grid_y + 1, stop_grid_x, stop_grid_y) + router.grid_graph[origin_grid_x][origin_grid_y + 1].get_wirenum();
+        up_cost = 1 + cal_h(origin_grid_x, origin_grid_y + 1, stop_grid_x, stop_grid_y) + 1000 * router.grid_graph[origin_grid_x][origin_grid_y + 1].get_wirenum();
         up_grid = new Grid(1, up_cost, origin_grid_x, origin_grid_y + 1, 0);
         up_grid->set_prev(cur_grid);
         // set_explored
@@ -63,7 +63,7 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
     }
 
     if (((origin_grid_y - 1) > -1) && (router.grid_graph[origin_grid_x][origin_grid_y - 1].get_throughable() == true)){
-        down_cost = 1 + cal_h(origin_grid_x, origin_grid_y - 1, stop_grid_x, stop_grid_y) + router.grid_graph[origin_grid_x][origin_grid_y - 1].get_wirenum();
+        down_cost = 1 + cal_h(origin_grid_x, origin_grid_y - 1, stop_grid_x, stop_grid_y) + 1000 * router.grid_graph[origin_grid_x][origin_grid_y - 1].get_wirenum();
         down_grid = new Grid(1, down_cost, origin_grid_x, origin_grid_y - 1, 0);
         down_grid->set_prev(cur_grid);
         // set_explored
@@ -115,7 +115,7 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
 
         // avoid backtrack (dont cal when obstacle or it is prev block)
         if ( (!((cur_x + 1 == prev_x) && (cur_y == prev_y))) && ((cur_x + 1) < router.grid_index(router.getBoundingbox()).first+1) && (router.grid_graph[cur_x + 1][cur_y].get_throughable() == true) && (router.grid_graph[cur_x + 1][cur_y].get_explored() == false)){
-            right_cost = cur_grid->get_G() + 1 + cal_h(cur_x + 1, cur_y, stop_grid_x, stop_grid_y) + router.grid_graph[cur_x + 1][cur_y].get_wirenum();
+            right_cost = cur_grid->get_G() + 1 + cal_h(cur_x + 1, cur_y, stop_grid_x, stop_grid_y) + 1000 * router.grid_graph[cur_x + 1][cur_y].get_wirenum();
             right_grid = new Grid(cur_grid->get_G() + 1, right_cost, cur_x + 1, cur_y, 0);
             right_grid->set_prev(cur_grid);
             // set_explored
@@ -124,7 +124,7 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         }
 
         if ( (!((cur_x - 1 == prev_x) && (cur_y == prev_y))) && ((cur_x - 1) > -1) && (router.grid_graph[cur_x - 1][cur_y].get_throughable() == true)  && (router.grid_graph[cur_x - 1][cur_y].get_explored() == false) ){
-            left_cost = cur_grid->get_G() + 1 + cal_h(cur_x - 1, cur_y, stop_grid_x, stop_grid_y) + router.grid_graph[cur_x - 1][cur_y].get_wirenum();
+            left_cost = cur_grid->get_G() + 1 + cal_h(cur_x - 1, cur_y, stop_grid_x, stop_grid_y) + 1000 * router.grid_graph[cur_x - 1][cur_y].get_wirenum();
             left_grid = new Grid(cur_grid->get_G() + 1, left_cost, cur_x - 1, cur_y, 0);
             left_grid->set_prev(cur_grid);
             // set_explored
@@ -133,7 +133,7 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         }
         
         if ( (!((cur_x == prev_x) && (cur_y + 1 == prev_y))) && ((cur_y + 1) < router.grid_index(router.getBoundingbox()).second+1) && (router.grid_graph[cur_x][cur_y + 1].get_throughable() == true) && (router.grid_graph[cur_x][cur_y + 1].get_explored() == false)){
-            up_cost = cur_grid->get_G() + 1 + cal_h(cur_x, cur_y + 1, stop_grid_x, stop_grid_y) + router.grid_graph[cur_x][cur_y + 1].get_wirenum();
+            up_cost = cur_grid->get_G() + 1 + cal_h(cur_x, cur_y + 1, stop_grid_x, stop_grid_y) + 1000 * router.grid_graph[cur_x][cur_y + 1].get_wirenum();
             up_grid = new Grid(cur_grid->get_G() + 1, up_cost, cur_x, cur_y + 1, 0);
             up_grid->set_prev(cur_grid);
             // set_explored
@@ -142,7 +142,7 @@ vector<pair<int, int>> astar_search(Router router, int origin_grid_x, int origin
         }
 
         if ( (!((cur_x == prev_x) && (cur_y - 1 == prev_y))) && ((cur_y - 1) > -1) && (router.grid_graph[cur_x][cur_y - 1].get_throughable() == true) && (router.grid_graph[cur_x][cur_y - 1].get_explored() == false)){
-            down_cost = cur_grid->get_G() + 1 + cal_h(cur_x, cur_y - 1, stop_grid_x, stop_grid_y) + router.grid_graph[cur_x][cur_y - 1].get_wirenum();
+            down_cost = cur_grid->get_G() + 1 + cal_h(cur_x, cur_y - 1, stop_grid_x, stop_grid_y) + 1000 * router.grid_graph[cur_x][cur_y - 1].get_wirenum();
             down_grid = new Grid(cur_grid->get_G() + 1, down_cost, cur_x, cur_y - 1, 0);
             down_grid->set_prev(cur_grid);
             // set_explored

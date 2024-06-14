@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <json.hpp>
+#include <climits>
 
 using namespace std;
 

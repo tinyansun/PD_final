@@ -24,15 +24,15 @@ def draw_grid_with_lines(grid, lines, output_file):
     ax.imshow(image_rotated, aspect='equal')
 
     # 添加格子线
-    x_ticks = np.arange(0, grid.shape[0], 10)
-    y_ticks = np.arange(0, grid.shape[1], 10)
+    x_ticks = np.arange(0, grid.shape[0], 100)
+    y_ticks = np.arange(0, grid.shape[1], 100)
     ax.set_xticks(x_ticks)
     ax.set_yticks(y_ticks)
-    ax.set_xticks(np.arange(-0.5, grid.shape[0], 1), minor=True)
-    ax.set_yticks(np.arange(-0.5, grid.shape[1], 1), minor=True)
-    ax.grid(which='minor', color='k', linestyle='-', linewidth=1)
-    ax.set_xticklabels([str(int(x)*200000) for x in x_ticks], fontsize=8)
-    ax.set_yticklabels([str(int(grid.shape[1] - 1 - y)*200000) for y in y_ticks], fontsize=8)
+    # ax.set_xticks(np.arange(-0.5, grid.shape[0], 1), minor=True)
+    # ax.set_yticks(np.arange(-0.5, grid.shape[1], 1), minor=True)
+    # ax.grid(which='minor', color='k', linestyle='-', linewidth=1)
+    ax.set_xticklabels([str(int(x)*20000) for x in x_ticks], fontsize=8)
+    ax.set_yticklabels([str(int(grid.shape[1] - 1 - y)*20000) for y in y_ticks], fontsize=8)
 
     # 设置刻度
     # num_rows, num_cols = grid.shape
