@@ -250,8 +250,6 @@ int main(int argc, char* argv[]) {
         }
         
         // store the result back to net-struct   
-        // TODO:
-
         //net[i]._Astar_out = Astar_out;
         outFile<<net[i].id<<endl;
         for (int j = 0; j < Astar_out.size(); j++){
@@ -272,7 +270,7 @@ int main(int argc, char* argv[]) {
         }
     }
     */
-   
+
     // evaluator for overflow
     double overflow_cost = 0.0;
     // double cap_gcell_edge = maxTrack;
