@@ -250,8 +250,6 @@ int main(int argc, char* argv[]) {
         }
         
         // store the result back to net-struct   
-        // TODO:
-
         //net[i]._Astar_out = Astar_out;
         outFile<<net[i].id<<endl;
         for (int j = 0; j < Astar_out.size(); j++){
