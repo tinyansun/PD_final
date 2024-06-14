@@ -306,6 +306,7 @@ public:
         }
         outFile.close();
     }
+
     //==================other parse function==================
     pair<int, int> transformPoint(const pair<int, int>& point, const string& orientation, int width, int height) {
         if (orientation == "N") {
@@ -359,11 +360,34 @@ public:
             // cerr << "Actual Coordinate: (" << actualPoint.first << ", " << actualPoint.second << ")" << endl;
             actualPoints.push_back(actualPoint);
         }
-        
         return actualPoints;
+    }
+
+    // overflow evaluate
+    double CalOverflowCost() {
+        double cost = 0.0;
+        // double cap_gcell_edge = maxTrack;
+        for (int i = 0; i < nets.size(); i++){
+            double hpwl = nets[i].CalHPWL();
+            // double occupied_track = net.numTracks;
+            vector<vector<pair<int, int>>> segmentList = nets[i]._Astar_out;
+            double segment_cost = 0.0;
+            for (int j = 0; j < segmentList.size(); j++) {
+                vector<pair<int, int>> twoPinSegment = segmentList[j];
+                for (int k = 0; k < twoPinSegment.size(); k++) {
+                    Grid grid = grid_graph[twoPinSegment[k].first][twoPinSegment[k].second];
+                    double trackCost = grid.get_wirenum();
+                    cout << "trackcost: ";
+                    cout << trackCost;
+                    cout << endl;
+                    segment_cost += trackCost;
+                }
+            }
+            cost += (segment_cost / hpwl);
         }
 
-    //data member
+        return cost;
+    }
 };
 
 
