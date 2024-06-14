@@ -273,7 +273,7 @@ int main(int argc, char* argv[]) {
         }
         
         net[i]._Astar_out = Astar_out;
-        cerr << "net "<<i<<" finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
+        //cerr << "net "<<i<<" finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
     }
     cerr << "routing finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
 

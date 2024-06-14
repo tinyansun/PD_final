@@ -36,5 +36,5 @@ else
 fi
 
 rm -f grid.csv
-#python3 ./bin/draw_route.py --grid ./figure_large/grid4.csv --lines ./figure_large/case4_net.rpt --output route4.png
-#python3 ./bin/draw_route.py --grid ./figure_large/grid5.csv --lines ./figure_large/case5_net.rpt --output route5.png
+#python3 ./bin/draw_route_large.py --grid ./figure_large_c/grid4.csv --lines ./figure_large_c/case4_net.rpt --output route4.png
+#python3 ./bin/draw_route_large.py --grid ./figure_large_c/grid5.csv --lines ./figure_large_c/case5_net.rpt --output route5.png

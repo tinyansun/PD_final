@@ -55,7 +55,7 @@ def draw_grid_with_lines(grid, lines, output_file):
     # 绘制线段，动态调整线宽和颜色
     for line, count in lines.items():
         (x0, y0), (x1, y1) = line
-        linewidth = min(0.7 * (1+count/10), 2.7)  # 线宽最大为0.5
+        linewidth = min(0.7 * (1+count/30), 2.7)  # 线宽最大为0.5
         color = 'red' if linewidth >= 1.8 else 'blue'  # 线宽达到最大值时为红色，否则为蓝色
         ax.plot([x0, x1], [grid.shape[1] - y0, grid.shape[1] - y1], color=color, linewidth=linewidth)
 

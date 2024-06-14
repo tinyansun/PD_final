@@ -9,7 +9,7 @@
 #include <map>
 #include <string>
 
-#define K 10
+#define K 1
 
 using namespace std;
 
