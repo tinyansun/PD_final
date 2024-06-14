@@ -264,6 +264,14 @@ int main(int argc, char* argv[]) {
 
     }
 
+    /*
+    for (int i = 0; i < router.grid_index(router.getBoundingbox()).first+1; i++){
+        for(int j = 0; j < router.grid_index(router.getBoundingbox()).second+1; j++){
+            cout << router.grid_graph[i][j].get_wirenum() << " ";
+        }
+    }
+    */
+
     // evaluator
     double overflow_cost;
     overflow_cost = router.CalOverflowCost();
