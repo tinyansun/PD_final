@@ -104,7 +104,7 @@ class Grid{
         void set_prev(Grid* prev) {_prevgrid = prev;}
         void set_throughable(bool throughable) {_throughable = throughable;}
         void add_block(DefParser::Block* b) {_blocks.push_back(b);}
-        void set_wirenum(int wirenum) {_wirenum = wirenum;}
+        void inc_wirenum() {_wirenum++;}
         void set_explored(bool explored) {_explored = explored;}
 
         // reset 
