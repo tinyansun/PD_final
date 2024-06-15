@@ -8,6 +8,7 @@
 #include <string>
 #include <set>
 #include <unordered_set>
+#include <unordered_map>
 
 using namespace std;
 
@@ -31,6 +32,7 @@ class Edge {
             _start_n = s;
             _end_n = e;
             _len = get_dist();
+            _dir = esti_dir();
 
             _dense = 0;
             _max_dense = 20; // to modify
@@ -41,6 +43,7 @@ class Edge {
         void set_dense(double d) { _dense = d; }
         void add_dense(double d) { _dense += d; }
         double get_dist();
+        bool esti_dir();
         Node* get_s() { return _start_n; }
         Node* get_e() { return _end_n; }
         float get_w() { 
@@ -53,6 +56,7 @@ class Edge {
         Node* _start_n;
         Node* _end_n;
         float _len;
+        bool _dir; // 0 for _ , 1 for |
         float _dense;
         float _max_dense;
         // bool _is_add_dij;
@@ -108,8 +112,23 @@ class Node {
         float _x;
         float _y;
         vector<Edge*> _e_list;
-        void push_e(Edge* e) {
-            if (getNeighbor(e) != nullptr) _e_list.push_back(e);
+        unordered_set<Node*> _neighbor;
+        bool push_e(Edge* e) {
+            Node* n = getNeighbor(e);
+            if (n != nullptr && n != this
+                && _neighbor.count(n) == 0
+                && this->get_blk()->isFeedthroughable
+                && n->get_blk()->isFeedthroughable) {
+                _e_list.push_back(e);
+                _neighbor.insert(n);
+                return true;
+            } else {
+                // if (!n->get_blk()->isFeedthroughable) {
+                //     cout << "in" << endl;
+                //     cout << n->get_blk()->name << endl;
+                // }
+                return false;
+            }
         }
         void reset() {
             _ptDS = this;
@@ -140,25 +159,36 @@ class Node {
 class Graph {
     public:
         Graph() {}
+        ~Graph() {
+            for (auto& n: V) delete n;
+            for (auto& e: E) delete e;
+        }
         void push_v(Blk* blk) {
-            Node* v = new Node(blk);
-            push_v(v);
-        }
-        void push_v(Node* v) {
-            V.push_back(v);
-        }
-        void push_e(Edge* e) {
-            E.push_back(e);
-            e->get_s()->push_e(e);
-            e->get_e()->push_e(e);
-        }
-        void make_complete_g() {
-            for (size_t i = 0; i < V.size(); i++) {
-                for (size_t j = i + 1; j < V.size(); j++) {
-                    push_e(new Edge(V[i], V[j]));
-                }
+            if (b2v.find(blk) == b2v.end()) {
+                // cout << "in" << endl;
+                // cout << blk << endl;
+                Node* v = new Node(blk);
+                // cout << v->get_blk() << endl;
+                b2v[blk] = v;
+                push_v(v);
             }
         }
+        void push_v(Node* v) {
+            // cout << "in" << endl;
+            V.push_back(v);
+            // cout << V.size() << endl;
+        }
+        bool push_e(Edge* e) {
+            if (e->get_s()->push_e(e) && e->get_e()->push_e(e)) {
+                E.push_back(e);
+                return true;
+            } else return false;
+        }
+        void make_complete_g();
+        void make_complete_g(const vector<Node*>&);
+        void make_bi_g(const vector<Node*>& ,const vector<Node*>&);
+        void make_supernode_g(const vector<Node*>&);
+        void make_global_g(Grid** ,pair<int, int>);
         void reset() {
             reset_V();
             reset_E();
@@ -175,13 +205,14 @@ class Graph {
         }
 
         vector<E_blk> MST();
-        vector<Edge*> Dijk(unordered_set<Node*>);
+        vector<E_blk> Dijk(vector<Blk*>);
 
         void test();
     private:
         Node* DS_Find (Node*);
         bool DS_Union (Node*, Node*);
 
+        // for Dijk
         vector<Node*> v_remain;
         Node* HP_ExtractMin();
         void HP_DecreaseKey(Node*, float);
@@ -203,5 +234,13 @@ class Graph {
         void Dijk_Relax(Node*);
 
         vector<Node*> V;
+        unordered_map<Blk*, Node*> b2v;
+        vector<Node*> block2node(vector<Blk*> blks) {
+            vector<Node*> ns;
+            for (auto& blk: blks) {
+                ns.push_back(b2v[blk]);
+            }
+            return ns;
+        }
         vector<Edge*> E;
 };

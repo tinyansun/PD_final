@@ -209,10 +209,71 @@ public:
                     it->second.left_bottom.second = it->second.left_bottom.second * grid_width;
                 }
             }
+        
+            // make all represent by some block
+            int x_bound = grid_index(boundingbox).first;
+            int y_bound = grid_index(boundingbox).second;
+            int cnt = 0;
+            for (int i = 0; i < x_bound; i++) {
+                for (int j = 0; j < y_bound; ++j) {
+                    if (grid_graph[i][j].get_blocks().empty()) {
+                        // int y_span = 0;
+                        // while (int j2 = ij; j2 < y_bound)
+                        string name = "CHANNEL_" + to_string(cnt);
+                        DefParser::Block* blk = new DefParser::Block(name, "", i * grid_width, j * grid_width, "");
+                        blk->shape.push_back(make_pair(0, 0));
+                        blk->shape.push_back(make_pair(grid_width, 0));
+                        blk->shape.push_back(make_pair(grid_width, grid_width));
+                        blk->shape.push_back(make_pair(0, grid_width));
+                        blk->orientation = "N";
+                        blk->region = true;
+                        blk->isFeedthroughable = true;
+                        form_channel(*blk);
+                        blocks.insert({name, *blk});
+                        // grid_graph[i][j].add_block(blk);
+                        cnt++;
+                    }
+                    // grid_graph[i][j] = Grid(0, 0, i, j, 1);
+                }
+            }
         }
     
     //==================data member access==================
     Grid** grid_graph;
+
+    void form_channel(DefParser::Block& blk) {
+        blk.actual_shape = calculateActualCoordinate(blk.position, blk.shape, blk.orientation);
+                
+        blk.left_bottom = make_pair(INT_MAX, INT_MAX);
+
+        //turn actual shape into grid coordinate
+        for(int i = 0; i < blk.actual_shape.size(); i++){
+            blk.actual_shape[i] = grid_index(blk.actual_shape[i]);
+        }
+        //set throughable
+        Polygon polygon(blk.actual_shape);
+        int minX, maxX, minY, maxY;
+        polygon.getBounds(minX, maxX, minY, maxY);
+        for (int j = minY; j <= maxY; ++j) {
+            for (int i = minX; i <= maxX; ++i) {
+                assert(i < (grid_index(boundingbox).first+1));
+                assert(j < (grid_index(boundingbox).second+1));
+                if (polygon.isPointInside(i, j)) {
+                    blk.left_bottom.first = min(blk.left_bottom.first, i);
+                    blk.left_bottom.second = min(blk.left_bottom.second, j);
+                    grid_graph[i][j].set_throughable(true);
+                    grid_graph[i][j].add_block(&blk);
+                }
+            }
+        }
+        if(blk.left_bottom.first == INT_MAX || blk.left_bottom.second == INT_MAX){
+            blk.left_bottom = blk.position;
+        }
+        else{
+            blk.left_bottom.first = blk.left_bottom.first * grid_width;
+            blk.left_bottom.second = blk.left_bottom.second * grid_width;
+        }
+    }
 
     // Function to get tracks per um
     const int& getTracksPerUm() const {

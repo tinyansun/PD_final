@@ -35,6 +35,6 @@ else
     ./bin/CGR 20 testcases/case5/case5_def testcases/case5/case5_cfg.json testcases/case5/case5.json
 fi
 
-rm -f grid.csv
-#python3 ./bin/draw_route_large.py --grid ./figure_large_c/grid4.csv --lines ./figure_large_c/case4_net.rpt --output route4.png
+# rm -f grid.csv
+python3 ./bin/draw_route_large.py --grid ./grid.csv --lines ./case4_net.rpt --output route4.png
 #python3 ./bin/draw_route_large.py --grid ./figure_large_c/grid5.csv --lines ./figure_large_c/case5_net.rpt --output route5.png
