@@ -65,39 +65,40 @@ int main(int argc, char* argv[]) {
     // Now, the router object contains all the necessary data for further processing.
 
 
-    // usage: 
-    // Graph G;
-    // for (block in net) G.push_v(&block)
-    // G.make_complete_g()
-    // global_wire = G.MST()
-
-
     vector<ConnectionJsonParser::NetInfo> net = router.getNets();
     unordered_map<string, DefParser::Block> blocks = router.getBlocks();
-    
     // TODO: net-ordering
-
+    Graph global_graph;
+    for (auto b: blocks) {
+        global_graph.push_v(&(b.second));
+    }
+    global_graph.make_global_g(router.grid_graph, router.getBoundingbox());
     for(int i = 0; i < net.size(); i++){
-        // new graph
-        Graph cur_graph;
-
-        // record path for each net, i: which block pair, j: grids on path
         vector<vector<pair<int, int>>> Astar_out;
-
-        // push_v all blks of this net
-        cur_graph.push_v(&blocks[net[i].tx]);
-
+        // new graph
+        // record path for each net, i: which block pair, j: grids on path
+        vector<DefParser::Block*> blk_net;
+        blk_net.push_back(&blocks[net[i].tx]);
         vector<string> blk_rx_list = net[i].rx;
         for (int j = 0; j < blk_rx_list.size(); j++){
-            cur_graph.push_v(&blocks[blk_rx_list[j]]);
+            blk_net.push_back(&blocks[blk_rx_list[j]]);
         }
 
+        // Graph cur_graph;
+        // cur_graph.push_v(&blocks[net[i].tx]);
+        // vector<string> blk_rx_list = net[i].rx;
+        // for (int j = 0; j < blk_rx_list.size(); j++){
+        //     cur_graph.push_v(&blocks[blk_rx_list[j]]);
+        // }
+        // cur_graph.make_complete_g();
+
+        // push_v all blks of this net
         // for test
         //cout << "start MST" << endl;
     
         // implement MST: get vector of pair of blks
-        cur_graph.make_complete_g();
-        vector<pair<DefParser::Block*, DefParser::Block*>> MST_out = cur_graph.MST();
+        vector<pair<DefParser::Block*, DefParser::Block*>> MST_out = global_graph.Dijk(blk_net);
+        // vector<pair<DefParser::Block*, DefParser::Block*>> MST_out = cur_graph.MST();
         
         //cout << "start Astar" << endl;
 
