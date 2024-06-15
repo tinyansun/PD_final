@@ -11,13 +11,16 @@ This project contains the following files and folders:
 - `readme.md`: This file introduces the significance of each file in the code.
 
 ### How to compile
-just type "make" in main directory, then executable file will be compiled into bin directory.
+just type "make" in main directory, then executable file will be compiled into bin directory.  
+
 example : make
 
 ### How to run routing program
-type "./bin/CGR <XX(tracks/um)> <caseX_def directory> <caseX_cfg.json file> <caseX.json file>", then output .rpt file will be generated in main directory.
+type "./bin/CGR <XX(tracks/um)> <caseX_def directory> <caseX_cfg.json file> <caseX.json file>", then output .rpt file will be generated in main directory.  
+
 exameple : ./bin/CGR 20 testcases/case4/case4_def testcases/case4/case4_cfg.json testcases/case4/case4.json
 
 ### How to run plot program
-type "python3 ./bin/draw_route.py --grid <grid.csv file> --lines <.rpt file> --output <output .png file>", then output .png file will be generated in main directory.
+type "python3 ./bin/draw_route.py --grid <grid.csv file> --lines <.rpt file> --output <output .png file>", then output .png file will be generated in main directory.  
+
 exameple : python3 ./bin/draw_route.py --grid ./result/grid4.csv --lines ./result/case4_net.rpt --output route4.png
