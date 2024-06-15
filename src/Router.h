@@ -11,6 +11,7 @@
 #include <DefParser.h>
 #include <CfgJsonParser.h>
 #include <ConnectionJsonParser.h>
+#include <climits>
 using namespace std;
 
 using json = nlohmann::json;
@@ -104,7 +105,7 @@ class Grid{
         void set_prev(Grid* prev) {_prevgrid = prev;}
         void set_throughable(bool throughable) {_throughable = throughable;}
         void add_block(DefParser::Block* b) {_blocks.push_back(b);}
-        void set_wirenum(int wirenum) {_wirenum = wirenum;}
+        void inc_wirenum() {_wirenum++;}
         void set_explored(bool explored) {_explored = explored;}
 
         // reset 
@@ -147,7 +148,7 @@ public:
            const vector<ConnectionJsonParser::NetInfo>& nts)
         : tracks_per_um(tpu), maxTrack(mT), boundingbox(box), blocks(blks), blockInfos(blkInfos), nets(nts) {
             //grid_width = ceil((double)maxTrack / (double)tracks_per_um);
-            grid_width = 200000;
+            grid_width = 20000;
 
             cerr<<grid_index(getBoundingbox()).first+1<<" "<<grid_index(getBoundingbox()).second+1<<endl;
             //init blocks
@@ -176,24 +177,36 @@ public:
             for (auto it = blocks.begin(); it != blocks.end(); ++it) {
                 //calculate actual shape
                 it->second.actual_shape = calculateActualCoordinate(it->second.position, it->second.shape, it->second.orientation);
-                //skip region and feedthroughable block
-                if(it->second.isFeedthroughable || it->second.region){
-                    continue;
+                
+                it->second.left_bottom = make_pair(INT_MAX, INT_MAX);
+
+                //turn actual shape into grid coordinate
+               for(int i = 0; i < it->second.actual_shape.size(); i++){
+                    it->second.actual_shape[i] = grid_index(it->second.actual_shape[i]);
                 }
 
                 //set throughable
                 Polygon polygon(it->second.actual_shape);
                 int minX, maxX, minY, maxY;
                 polygon.getBounds(minX, maxX, minY, maxY);
-                for (int i = minX; i <= maxX; ++i) {
-                    for (int j = minY; j <= maxY; ++j) {
+                for (int j = minY; j <= maxY; ++j) {
+                    for (int i = minX; i <= maxX; ++i) {
                         assert(i < (grid_index(boundingbox).first+1));
                         assert(j < (grid_index(boundingbox).second+1));
                         if (polygon.isPointInside(i, j)) {
-                            grid_graph[i][j].set_throughable(false);
+                            it->second.left_bottom.first = min(it->second.left_bottom.first, i);
+                            it->second.left_bottom.second = min(it->second.left_bottom.second, j);
+                            grid_graph[i][j].set_throughable(it->second.isFeedthroughable);
                             grid_graph[i][j].add_block(&it->second);
                         }
                     }
+                }
+                if(it->second.left_bottom.first == INT_MAX || it->second.left_bottom.second == INT_MAX){
+                    it->second.left_bottom = it->second.position;
+                }
+                else{
+                    it->second.left_bottom.first = it->second.left_bottom.first * grid_width;
+                    it->second.left_bottom.second = it->second.left_bottom.second * grid_width;
                 }
             }
         }
@@ -244,6 +257,10 @@ public:
         for (auto it = blocks.begin(); it != blocks.end(); ++it) {
             vector<pair<int, int>> actualPoints = calculateActualCoordinate(it->second.position, it->second.shape, it->second.orientation);
 
+            for(int i = 0; i < actualPoints.size(); i++){
+                actualPoints[i] = grid_index(actualPoints[i]);
+            }
+
             json poly;
             for (const auto& point : actualPoints) {
                 poly.push_back({point.first, point.second});
@@ -278,10 +295,10 @@ public:
         }
 
         ofstream outFile("grid.csv");
-        for (int i = 0; i < grid_index(getBoundingbox()).first; ++i) {
-            for (int j = 0; j < grid_index(getBoundingbox()).second; ++j) {
+        for (int i = 0; i < grid_index(getBoundingbox()).first+1; ++i) {
+            for (int j = 0; j < grid_index(getBoundingbox()).second+1; ++j) {
                 outFile << grid_graph[i][j].color;
-                if (j < grid_index(getBoundingbox()).second - 1) {
+                if (j < grid_index(getBoundingbox()).second) {
                     outFile << ",";
                 }
             }
@@ -289,6 +306,7 @@ public:
         }
         outFile.close();
     }
+
     //==================other parse function==================
     pair<int, int> transformPoint(const pair<int, int>& point, const string& orientation, int width, int height) {
         if (orientation == "N") {
@@ -337,16 +355,39 @@ public:
         vector<pair<int, int>> actualPoints;
         for (const auto& relativePoint : relativePoints) {
             pair<int, int> transformedPoint = transformPoint(relativePoint, orientation, width, height);
-            pair<int, int> actualPoint = grid_index(make_pair(origin.first + transformedPoint.first, origin.second + transformedPoint.second));
+            pair<int, int> actualPoint = make_pair(origin.first + transformedPoint.first, origin.second + transformedPoint.second);
             // cerr << "Relative Coordinate: (" << origin.first + transformedPoint.first << ", " << origin.second + transformedPoint.second << ")" << endl;
             // cerr << "Actual Coordinate: (" << actualPoint.first << ", " << actualPoint.second << ")" << endl;
             actualPoints.push_back(actualPoint);
         }
-        
         return actualPoints;
+    }
+
+    // overflow evaluate
+    double CalOverflowCost() {
+        double cost = 0.0;
+        // double cap_gcell_edge = maxTrack;
+        for (int i = 0; i < nets.size(); i++){
+            double hpwl = nets[i].CalHPWL();
+            // double occupied_track = net.numTracks;
+            vector<vector<pair<int, int>>> segmentList = nets[i]._Astar_out;
+            double segment_cost = 0.0;
+            for (int j = 0; j < segmentList.size(); j++) {
+                vector<pair<int, int>> twoPinSegment = segmentList[j];
+                for (int k = 0; k < twoPinSegment.size(); k++) {
+                    Grid grid = grid_graph[twoPinSegment[k].first][twoPinSegment[k].second];
+                    double trackCost = grid.get_wirenum();
+                    cout << "trackcost: ";
+                    cout << trackCost;
+                    cout << endl;
+                    segment_cost += trackCost;
+                }
+            }
+            cost += (segment_cost / hpwl);
         }
 
-    //data member
+        return cost;
+    }
 };
 
 

@@ -55,10 +55,11 @@ int main(int argc, char* argv[]) {
     cerr << "parse finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
     if(draw){
         router.printGrid();
+        return 0;
     }
 
     //output file
-    string out_file = string("case") + defDirectory.back() + "_net.rpt";
+    string out_file = string("case") + defDirectory[defDirectory.find("_") - 1] + "_net.rpt";
     ofstream outFile(out_file);
 
     // Now, the router object contains all the necessary data for further processing.
@@ -92,13 +93,13 @@ int main(int argc, char* argv[]) {
         }
 
         // for test
-        cout << "start MST" << endl;
-
+        //cout << "start MST" << endl;
+    
         // implement MST: get vector of pair of blks
         cur_graph.make_complete_g();
         vector<pair<DefParser::Block*, DefParser::Block*>> MST_out = cur_graph.MST();
         
-        cout << "start Astar" << endl;
+        //cout << "start Astar" << endl;
 
         // Find coordinates of each pair
         for (int j = 0; j < MST_out.size(); j++){
@@ -113,8 +114,8 @@ int main(int argc, char* argv[]) {
             // start blk: blk_1, end_blk: blk_2
             if (MST_out[j].first == &blocks[net[i].tx]){
                 // tx
-                cur_blk_1_x = (MST_out[j].first)->position.first + net[i].txCoord.first;
-                cur_blk_1_y = (MST_out[j].first)->position.second + net[i].txCoord.second;
+                cur_blk_1_x = (MST_out[j].first)->left_bottom.first + net[i].txCoord.first;
+                cur_blk_1_y = (MST_out[j].first)->left_bottom.second + net[i].txCoord.second;
 
                 // multiple rx
                 int index;
@@ -123,8 +124,8 @@ int main(int argc, char* argv[]) {
                     if (MST_out[j].second->name == net[i].rx[k]) index = k;
                 }
 
-                cur_blk_2_x = (MST_out[j].second)->position.first + net[i].rxCoord[index].first;
-                cur_blk_2_y = (MST_out[j].second)->position.second + net[i].rxCoord[index].second;
+                cur_blk_2_x = (MST_out[j].second)->left_bottom.first + net[i].rxCoord[index].first;
+                cur_blk_2_y = (MST_out[j].second)->left_bottom.second + net[i].rxCoord[index].second;
                 
                 // change to grid coord
                 int grid_1_x, grid_1_y;
@@ -172,7 +173,12 @@ int main(int argc, char* argv[]) {
 
                 // A*-search
                 if (!((grid_1_x == grid_2_x) && (grid_1_y == grid_2_y))){
-                    Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
+                    vector<pair<int, int>> L_route = Z_shape(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y);
+                    if (!L_route.empty()) {
+                        Astar_out.push_back(L_route);
+                    } else {
+                        Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
+                    }
                 }
                 else{
                     Astar_out.push_back(vector<pair<int, int>>(2, make_pair(grid_1_x, grid_1_y)));
@@ -180,8 +186,8 @@ int main(int argc, char* argv[]) {
             }
             // start blk: blk_2, end_blk: blk_1
             else if (MST_out[j].second == &blocks[net[i].tx]){
-                cur_blk_2_x = (MST_out[j].second)->position.first + net[i].txCoord.first;
-                cur_blk_2_y = (MST_out[j].second)->position.second + net[i].txCoord.second;
+                cur_blk_2_x = (MST_out[j].second)->left_bottom.first + net[i].txCoord.first;
+                cur_blk_2_y = (MST_out[j].second)->left_bottom.second + net[i].txCoord.second;
 
                 // multiple rx
                 int index;
@@ -189,8 +195,8 @@ int main(int argc, char* argv[]) {
                 for (int k = 0; k < net[i].rx.size(); k++){
                     if (MST_out[j].second->name == net[i].rx[k]) index = k;
                 }
-                cur_blk_1_x = (MST_out[j].first)->position.first + net[i].rxCoord[index].first;
-                cur_blk_1_y = (MST_out[j].first)->position.second + net[i].rxCoord[index].second;
+                cur_blk_1_x = (MST_out[j].first)->left_bottom.first + net[i].rxCoord[index].first;
+                cur_blk_1_y = (MST_out[j].first)->left_bottom.second + net[i].rxCoord[index].second;
 
                 // change to grid coord
                 double grid_1_x, grid_1_y;
@@ -237,32 +243,70 @@ int main(int argc, char* argv[]) {
 
                 // A*-search
                 if (!((grid_1_x == grid_2_x) && (grid_1_y == grid_2_y))){
-                    Astar_out.push_back(astar_search(router, grid_2_x, grid_2_y, grid_1_x, grid_1_y));
+                    vector<pair<int, int>> L_route = Z_shape(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y);
+                    if (!L_route.empty()) {
+                        // for (auto coord: L_route) {
+                        //     cout << coord.first << " " << coord.second << endl;
+                        // }
+                        Astar_out.push_back(L_route);
+                    } else {
+                        Astar_out.push_back(astar_search(router, grid_1_x, grid_1_y, grid_2_x, grid_2_y));
+                    }
                 }
                 else{
                     Astar_out.push_back(vector<pair<int, int>>(2, make_pair(grid_1_x, grid_1_y)));
                 }
             }
             else{
-                cout << "Impossible! there's no middle blks!" << endl;
+                //cout << "Impossible! there's no middle blks!" << endl;
             }
         }
         
         // store the result back to net-struct   
-        // TODO:
-
         //net[i]._Astar_out = Astar_out;
         outFile<<net[i].id<<endl;
         for (int j = 0; j < Astar_out.size(); j++){
+            if(Astar_out[j].size() == 0) continue;
             for (int k = 0; k < Astar_out[j].size()-1; k++){
                 outFile<<"("<<Astar_out[j][k].first<<","<<Astar_out[j][k].second<<"),("<<Astar_out[j][k+1].first<<","<<Astar_out[j][k+1].second<<")"<<endl;
             }
         }
         
         net[i]._Astar_out = Astar_out;
-
+        //cerr << "net "<<i<<" finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
     }
+    cerr << "routing finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
 
+    // print wirenum
+    // for (int i = 0; i < router.grid_index(router.getBoundingbox()).first+1; i++){
+    //     for(int j = 0; j < router.grid_index(router.getBoundingbox()).second+1; j++){
+    //         cout << router.grid_graph[i][j].get_wirenum() << " ";
+    //     }
+    // }
+   
+    // evaluator for overflow
+    double overflow_cost = 0.0;
+    // double cap_gcell_edge = maxTrack;
+    for (int i = 0; i < net.size(); i++){
+        double hpwl = net[i].CalHPWL();
+        // double occupied_track = net.numTracks;
+        vector<vector<pair<int, int>>> segmentList = net[i]._Astar_out;
+        double segment_cost = 0.0;
+        for (int j = 0; j < segmentList.size(); j++) {
+            vector<pair<int, int>> twoPinSegment = segmentList[j];
+            for (int k = 0; k < twoPinSegment.size(); k++) {
+                Grid grid = router.grid_graph[twoPinSegment[k].first][twoPinSegment[k].second];
+                double trackCost = grid.get_wirenum();
+                // cout << "trackcost: " << trackCost << endl;
+                segment_cost += trackCost;
+            }
+        }
+        overflow_cost += (segment_cost / hpwl);
+    }
+    cout << "overflow_cost: " << overflow_cost << endl;
+    cerr << "evaluator finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
+
+    
     return 0;
 }
 

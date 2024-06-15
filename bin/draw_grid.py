@@ -31,19 +31,28 @@ def main():
     image_rotated = np.rot90(image)
 
     # 保存图像到文件
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(10, 10), dpi=200)
     ax.imshow(image_rotated, aspect='equal')
-
-    # 设置刻度
-    num_rows, num_cols = grid.shape
-    x_ticks = np.linspace(0, num_cols - 1, num=5)
-    y_ticks = np.linspace(0, num_rows - 1, num=5)
+    
+    # 添加格子线
+    x_ticks = np.arange(0, grid.shape[0], 100)
+    y_ticks = np.arange(0, grid.shape[1], 100)
     ax.set_xticks(x_ticks)
     ax.set_yticks(y_ticks)
-
-    # 设置刻度标签为0到1的比例
-    ax.set_xticklabels([f'{x / (num_cols - 1):.2f}' for x in x_ticks])
-    ax.set_yticklabels([f'{(num_rows - 1 - y) / (num_rows - 1):.2f}' for y in y_ticks])
+    # ax.set_xticks(np.arange(-0.5, grid.shape[0], 1), minor=True)
+    # ax.set_yticks(np.arange(-0.5, grid.shape[1], 1), minor=True)
+    #ax.grid(which='minor', color='k', linestyle='-', linewidth=1)
+    ax.set_xticklabels([str(int(x)*20000) for x in x_ticks], fontsize=8)
+    ax.set_yticklabels([str(int(grid.shape[1] - 1 - y)*20000) for y in y_ticks], fontsize=8)
+    
+    # 设置刻度
+    # num_rows, num_cols = grid.shape
+    # x_ticks = np.linspace(0, num_cols - 1, num=5)
+    # y_ticks = np.linspace(0, num_rows - 1, num=5)
+    # ax.set_xticks(x_ticks)
+    # ax.set_yticks(y_ticks)
+    # ax.set_xticklabels([f'{x / (num_cols - 1):.2f}' for x in x_ticks])
+    # ax.set_yticklabels([f'{(num_rows - 1 - y) / (num_rows - 1):.2f}' for y in y_ticks])
 
     # 隐藏坐标轴边框
     ax.spines['top'].set_visible(False)
