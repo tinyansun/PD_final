@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
     }
 
     Router router(tracks_per_um, connectionParser.getmaxTrack(), defParser.getBoundingbox(), defParser.getBlocks(), cfgParser.getBlocks(), connectionParser.getNets());
-    cerr << "parse finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
+    //cerr << "parse finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
     if(draw){
         router.printGrid();
         return 0;
@@ -268,14 +268,14 @@ int main(int argc, char* argv[]) {
         for (int j = 0; j < Astar_out.size(); j++){
             if(Astar_out[j].size() == 0) continue;
             for (int k = 0; k < Astar_out[j].size()-1; k++){
-                outFile<<"("<<Astar_out[j][k].first<<","<<Astar_out[j][k].second<<"),("<<Astar_out[j][k+1].first<<","<<Astar_out[j][k+1].second<<")"<<endl;
+                outFile<<"("<<Astar_out[j][k].first*200000<<","<<Astar_out[j][k].second*200000<<"),("<<Astar_out[j][k+1].first*200000<<","<<Astar_out[j][k+1].second*200000<<")"<<endl;
             }
         }
         
         net[i]._Astar_out = Astar_out;
         //cerr << "net "<<i<<" finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
     }
-    cerr << "routing finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
+    //cerr << "routing finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
 
     // print wirenum
     // for (int i = 0; i < router.grid_index(router.getBoundingbox()).first+1; i++){
@@ -303,8 +303,8 @@ int main(int argc, char* argv[]) {
         }
         overflow_cost += (segment_cost / hpwl);
     }
+    cerr << "routing finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
     cout << "overflow_cost: " << overflow_cost << endl;
-    cerr << "evaluator finish, time = " << (chrono::duration_cast<std::chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count()) / 1000.0 << endl;
 
     
     return 0;

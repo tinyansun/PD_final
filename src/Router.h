@@ -148,9 +148,9 @@ public:
            const vector<ConnectionJsonParser::NetInfo>& nts)
         : tracks_per_um(tpu), maxTrack(mT), boundingbox(box), blocks(blks), blockInfos(blkInfos), nets(nts) {
             //grid_width = ceil((double)maxTrack / (double)tracks_per_um);
-            grid_width = 20000;
+            grid_width = 200000;
 
-            cerr<<grid_index(getBoundingbox()).first+1<<" "<<grid_index(getBoundingbox()).second+1<<endl;
+            //cerr<<grid_index(getBoundingbox()).first+1<<" "<<grid_index(getBoundingbox()).second+1<<endl;
             //init blocks
             for (auto it = blocks.begin(); it != blocks.end(); ++it) {
                 if(!it->second.region){
